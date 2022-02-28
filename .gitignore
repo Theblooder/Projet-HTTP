@@ -1,3 +1,4 @@
 httpparseur
 .vscode
 get1
+objects/*.o
