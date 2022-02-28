@@ -1,4 +1,3 @@
-objects/*.o
 httpparseur
 .vscode
 get1
