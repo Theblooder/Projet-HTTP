@@ -11,18 +11,6 @@ int HTTP_message(int p, const char *req, node *pere);
 
     int header_field(int p, const char *req, node *pere);
 
-        int Connection_header(int p, const char *req, node *pere);
-
-            int Connection(int p, const char *req, node *pere);
-
-                int case__AND__OWS(int p, const char *req, node *pere);
-
-                int connection_option(int p, const char *req, node *pere);
-
-                int OWS__AND__case__AND__optional(int p, const char *req, node *pere);
-
-                    int OWS__AND__connection_option(int p, const char *req, node *pere);
-
         int Content_Length_Header(int p, const char *req, node *pere);
 
             int Content_Length(int p, const char *req, node *pere);

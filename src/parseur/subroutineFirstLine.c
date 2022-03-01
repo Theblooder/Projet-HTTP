@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tree.h"
+#include "../tree.h"
 #include "subroutineParseur.h"
 #include "subroutineMultipleTerminal.h"
 #include "subroutineFirstLine.h"

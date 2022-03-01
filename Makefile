@@ -1,11 +1,10 @@
 BIN = httpparseur
 
-SRC = $(wildcard *.c)
-OBJ = $(SRC:.c=.o)
-
 CFLAGS = -Wall -ansi -pedantic
 
-OBJECTSPATH = objects/
+OBJECTSPATH = src/objects/
+SRCPATH = src/
+SRC2PATH = src/parseur/
 
 CC = gcc
 
@@ -21,16 +20,14 @@ IGNORE4 = .gitignore
 all: $(BIN)
 	./$<
 
-exe: $(BIN)
+exe:
+	cd $(SRCPATH) && $(MAKE)
+	cd $(SRC2PATH) && $(MAKE)
+	$(CC) $(OBJECTSPATH)*.o $(CFLAGS) -o $(BIN)
 
 debug: $(BIN)                 # J'ai rajouter une option pour faire l'executable tout en l'executant avec le debugger ddd
 	ddd $<
 
-$(BIN): $(OBJ)
-	$(CC) $(OBJECTSPATH)*.o $(CFLAGS) -o $@
-	 
-%.o: %.c                   # Je rejoute l'option -g pour pouvoir utiliser le debugger   
-	$(CC) -g -c $< -o $(OBJECTSPATH)$@
 
 tar: clear
 	dir=$$(basename $$PWD) && echo "compressing $(dir)" && cd .. && \

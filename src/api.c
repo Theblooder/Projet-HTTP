@@ -3,7 +3,7 @@
 #include <string.h>
 #include "tree.h"
 #include "api.h"
-#include "subroutineParseur.h"
+#include "parseur/subroutineParseur.h"
 #include "fonctions.h"
 
 
@@ -16,8 +16,7 @@ static char *requ;
     
 
 int parseur(char *req, int len)
-{   
-    printf("%d", sizeof(node));
+{
     requ = req;
     root = (node*) malloc(sizeof(node));
 
