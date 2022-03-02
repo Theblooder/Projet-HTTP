@@ -311,24 +311,19 @@ int sub_delims(int p, const char *req, node *pere)
 int obs_text(int p, const char *req, node *pere)
 {
     int len;
+    int now = p;
+
     node* fils;
 
 
-    if(len = range(p, req, fils = createFils(pere), 0x80, 0xFF)) {
-        putValueInNode(p, len, "obs_text", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = range(p, req, fils, -255, -1)) {
-        putValueInNode(p, len, "obs_text", pere);
-        return len;
-    }
-    else
+    if(!(len = range(p, req, fils = createFils(pere), 0x80, 0xFF))) {
         purgeNode(fils);
+        return false;
+    }
+    now += len;
 
-    return false;
+    putValueInNode(p, now-p, "obs_text", pere);
+    return now-p;
 }
 
 int HEXDIG(int p, const char *req, node *pere)
@@ -373,6 +368,16 @@ int HEXDIG(int p, const char *req, node *pere)
         purgeNode(fils);
     
     return false;
+}
+
+int OCTET(int p, const unsigned char *req, node *pere)
+{
+    if(req[p] != '\0' && (req[p] >= 0x00 && req[p] <= 0xFF)) {
+        putValueInNode(p, 1, "OCTET", pere);
+        return 1;
+    }
+    else
+        return false;
 }
 
 int DQUOTE(int p, const char *req, node *pere)
@@ -531,7 +536,7 @@ int VCHAR(int p, const char *req, node *pere) /* terminal */
         return false;
 }
 
-int range(int p, const char *req, node *pere, int d, int f)
+int range(int p, const unsigned char *req, node *pere, int d, int f)
 {
     if(req[p] != '\0' && (req[p] >= d && req[p] <= f)) {
         putValueInNode(p, 1, "range", pere);

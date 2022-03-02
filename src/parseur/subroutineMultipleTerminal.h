@@ -20,6 +20,7 @@
     int pct_encoded(int p, const char *req, node *pere);
     int sub_delims(int p, const char *req, node *pere);
     int HEXDIG(int p, const char *req, node *pere);
+    int OCTET(int p, const unsigned char *req, node *pere);
     int DQUOTE(int p, const char *req, node *pere);
     int OWS(int p, const char *req, node *pere);
     int BWS(int p, const char *req, node *pere);
@@ -30,7 +31,7 @@
     int SP(int p, const char *req, node *pere);
     int HTAB(int p, const char *req, node *pere);
     int VCHAR(int p, const char *req, node *pere);
-    int range(int p, const char *req, node *pere, int d, int f);
+    int range(int p, const unsigned char *req, node *pere, int d, int f);
     int num(int p, const char *req, node *pere, int *v, int n);
     int case_insensitive_char(int p, const char *req, node *pere, char c);
     int case_insensitive_string(int p, const char *req, node *pere, char *c);
