@@ -9,6 +9,8 @@ int HTTP_message(int p, const char *req, node *pere);
 
     int header_field__AND__CRLF(int p, const char *req, node *pere);
 
+    int header_field(int p, const char *req, node *pere);
+
         int Unknow_header(int p, const char *req, node *pere);
 
     /* CRLF */

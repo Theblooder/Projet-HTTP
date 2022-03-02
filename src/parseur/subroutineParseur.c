@@ -38,10 +38,6 @@ int HTTP_message(int p, const char *req, node *pere)
     }
     purgeFilsAndFrere(fils);
 
-    purgeNode(fils);
-    putValueInNode(p, now-p, "HTTP_message", pere);
-    return now-p;
-
     if(!(len = CRLF(now, req, fils))) {
         purgeNode(fils);
         return false;
@@ -149,7 +145,22 @@ int header_field(int p, const char *req, node *pere)
 
 int message_body(int p, const char *req, node *pere)
 {
+    int len;
+    int now = p;
+    node *fils;
 
+    int nbr = 0;
+    fils = createFils(pere);
+    while(len = OCTET(now, req, fils)) {
+        nbr++;
+        now += len;
+        fils = createFrere(fils);
+    }
+    purgeFilsAndFrere(fils);
+    purgeNode(fils);
+
+    putValueInNode(p, now-p, "message_body", pere);
+    return now-p;
 }
 
 
