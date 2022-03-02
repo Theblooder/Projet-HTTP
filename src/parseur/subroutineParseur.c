@@ -12,6 +12,7 @@
 #include "headerTransfertEncoding.h"
 #include "headerExpect.h"
 #include "headerHost.h"
+#include "headerAccept.h"
 
 
 #define true 1
@@ -124,6 +125,13 @@ int header_field(int p, const char *req, node *pere)
         purgeFilsAndFrere(fils);
 
     if(len = Host_header(p, req, fils)) {
+        putValueInNode(p, len, "header_field", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = Accept_header(p, req, fils)) {
         putValueInNode(p, len, "header_field", pere);
         return len;
     }
