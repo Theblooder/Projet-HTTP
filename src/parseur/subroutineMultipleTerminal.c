@@ -576,3 +576,209 @@ int case_insensitive_string(int p, const char *req, node *pere, char *c) /* term
     putValueInNode(p, now-p, "case_insensitive_string", pere);
     return now-p;
 }
+
+int case__AND__OWS(int p, const char *req, node *pere)
+{
+    int len;
+    int now = p;
+
+    node* fils;
+
+    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), ','))) {
+        purgeNode(fils);
+        return false;
+    }
+    now += len;
+
+    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
+        purgeNode(fils);
+    }
+    now += len;
+
+    putValueInNode(p, now-p, "", pere);
+    return now-p;
+}
+
+/* Call just some times */
+int token__AND__quoted_string(int p, const char *req, node *pere)
+{
+    int len;
+    node *fils;
+
+    if(len = token(p, req, fils = createFils(pere))) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = quoted_string(p, req, fils)) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeNode(fils);
+        
+    return false;
+}
+
+int quoted_string(int p, const char *req, node *pere)
+{
+    int len;
+    int now = p;
+
+    node* fils;
+
+    if(!(len = DQUOTE(now, req, fils = createFils(pere)))) {
+        purgeNode(fils);
+        return false;
+    }
+    now += len;
+
+    int nbr = 0;
+    while(len = qdtext__AND__quoted_pair(now, req, fils = createFrere(fils))) {
+        nbr++;
+        now += len;
+    }
+    purgeFilsAndFrere(fils);
+
+    if(!(len = DQUOTE(now, req, fils))) {
+        purgeNode(fils);
+        return false;
+    }
+    now += len;
+
+    putValueInNode(p, now-p, "quoted_string", pere);
+    return now-p;
+}
+
+int qdtext__AND__quoted_pair(int p, const char *req, node *pere)
+{
+    int len;
+    node *fils;
+
+    if(len = qdtext(p, req, fils = createFils(pere))) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = quoted_pair(p, req, fils)) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeNode(fils);
+        
+    return false;
+}
+
+int qdtext(int p, const char *req, node *pere)
+{
+    int len;
+    node *fils;
+
+    if(len = HTAB(p, req, fils = createFils(pere))) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = SP(p, req, fils)) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = case_insensitive_char(p, req, fils, '!')) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = range(p, req, fils, 0x23, 0x5B)) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = range(p, req, fils, 0x5D, 0x7E)) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = obs_text(p, req, fils)) {
+        putValueInNode(p, len, "qdtext", pere);
+        return len;
+    }
+    else
+        purgeNode(fils);
+        
+    return false;
+}
+
+int quoted_pair(int p, const char *req, node *pere)
+{
+    int len;
+    int now = p;
+
+    node* fils;
+
+    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '\\'))) {
+        purgeNode(fils);
+        return false;
+    }
+    now += len;
+
+    if(!(len = HTAB_SP_VCHAR_obs_text(now, req, fils = createFrere(fils)))) {
+        purgeNode(fils);
+        return false;
+    }
+    now += len;
+
+    putValueInNode(p, now-p, "quoted_pair", pere);
+    return now-p;
+}
+
+int HTAB_SP_VCHAR_obs_text(int p, const char *req, node *pere)
+{
+    int len;
+    node *fils;
+
+    if(len = HTAB(p, req, fils = createFils(pere))) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = SP(p, req, fils)) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = VCHAR(p, req, fils)) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = obs_text(p, req, fils)) {
+        putValueInNode(p, len, "", pere);
+        return len;
+    }
+    else
+        purgeNode(fils);
+        
+    return false;
+}

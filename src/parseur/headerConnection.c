@@ -83,28 +83,6 @@ int Connection(int p, const char *req, node *pere)
     return now-p;
 }
 
-int case__AND__OWS(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), ','))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
 int connection_option(int p, const char *req, node *pere)
 {
     int len;

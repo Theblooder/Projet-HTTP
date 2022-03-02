@@ -35,5 +35,19 @@
     int case_insensitive_char(int p, const char *req, node *pere, char c);
     int case_insensitive_string(int p, const char *req, node *pere, char *c);
 
+    int case__AND__OWS(int p, const char *req, node *pere);
+    
+    int token__AND__quoted_string(int p, const char *req, node *pere);
+
+        int quoted_string(int p, const char *req, node *pere);
+
+            int qdtext__AND__quoted_pair(int p, const char *req, node *pere);
+
+            int quoted_pair(int p, const char *req, node *pere);
+
+                int HTAB_SP_VCHAR_obs_text(int p, const char *req, node *pere);
+
+            int qdtext(int p, const char *req, node *pere);
+
 
 #endif

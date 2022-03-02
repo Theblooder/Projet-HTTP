@@ -1,5 +1,4 @@
 httpparseur
 .vscode
 get1
-objects/*.o
-objects/src/*.o
+src/objects/*.o
