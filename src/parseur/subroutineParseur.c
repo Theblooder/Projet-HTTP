@@ -13,6 +13,8 @@
 #include "headerExpect.h"
 #include "headerHost.h"
 #include "headerAccept.h"
+#include "headerAcceptCharset.h"
+#include "headerAcceptEncoding.h"
 
 
 #define true 1
@@ -132,6 +134,20 @@ int header_field(int p, const char *req, node *pere)
         purgeFilsAndFrere(fils);
 
     if(len = Accept_header(p, req, fils)) {
+        putValueInNode(p, len, "header_field", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = Accept_Charset_header(p, req, fils)) {
+        putValueInNode(p, len, "header_field", pere);
+        return len;
+    }
+    else
+        purgeFilsAndFrere(fils);
+
+    if(len = Accept_Encoding_header(p, req, fils)) {
         putValueInNode(p, len, "header_field", pere);
         return len;
     }
