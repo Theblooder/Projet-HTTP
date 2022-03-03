@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../tree.h"
+#include "../main/tree.h"
 #include "subroutineMultipleTerminal.h"
 #include "headerAcceptEncoding.h"
 #include "headerAccept.h"

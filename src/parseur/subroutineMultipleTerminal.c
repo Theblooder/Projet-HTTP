@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "../tree.h"
+#include "../main/tree.h"
 #include "subroutineParseur.h"
 #include "subroutineMultipleTerminal.h"
 

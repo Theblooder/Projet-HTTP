@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../tree.h"
+#include "../main/tree.h"
 #include "subroutineParseur.h"
 #include "subroutineMultipleTerminal.h"
 #include "subroutineFirstLine.h"
@@ -26,7 +26,7 @@ int HTTP_message(int p, const char *req, node *pere)
     int len;
     int now = p;
 
-    node* fils;
+    node* fils;  
 
     if(!(len = start_line(now, req, fils = createFils(pere)))) {
         purgeNode(fils);
