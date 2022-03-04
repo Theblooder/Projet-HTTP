@@ -28,7 +28,7 @@ OBJS := $(subst $(SOURCEDIR),$(BUILDDIR),$(SOURCES:.c=.o))
 # Define dependencies files for all objects
 DEPS = $(OBJS:.o=.d)
 # Name the compiler
-CC = gcc
+CC = gcc -g
 # OS specific part
 ifeq ($(OS),Windows_NT)
 	RM = del /F /Q

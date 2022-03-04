@@ -6,7 +6,7 @@
 void printTree(node *root, int height, const char *req)
 {
     
-    char value[1024];
+    char value[2800];
     int p = 0;
     for(int i=root->pStart; p<root->length; i++) {
         if(req[i] == '\n' || req[i] == '\r') {

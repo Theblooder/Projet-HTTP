@@ -90,7 +90,6 @@ int cookie_pair(int p, const char *req, node *pere)
 
     if(!(len = cookie_value(now, req, fils = createFrere(fils)))) {
         purgeNode(fils);
-        return false;
     }
     now += len;
 

@@ -25,12 +25,12 @@
     int OWS(int p, const char *req, node *pere);
     int BWS(int p, const char *req, node *pere);
     int SP__OR__HTAB(int p, const char *req, node *pere);
-    int ALPHA(int p, const char *req, node *pere);
+    int ALPHA(int p, const unsigned char *req, node *pere);
     int DIGIT(int p, const char *req, node *pere);
     int CRLF(int p, const char *req, node *pere);
     int SP(int p, const char *req, node *pere);
     int HTAB(int p, const char *req, node *pere);
-    int VCHAR(int p, const char *req, node *pere);
+    int VCHAR(int p, const unsigned char *req, node *pere);
     int range(int p, const unsigned char *req, node *pere, int d, int f);
     int num(int p, const char *req, node *pere, int *v, int n);
     int case_insensitive_char(int p, const char *req, node *pere, char c);

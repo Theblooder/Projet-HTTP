@@ -452,7 +452,7 @@ int SP__OR__HTAB(int p, const char *req, node *pere)
     return false;
 }
 
-int ALPHA(int p, const char *req, node *pere)
+int ALPHA(int p, const unsigned char *req, node *pere)
 {
     if(req[p] != '\0') {
         if((req[p] >= 65 && req[p] <= 90) || (req[p] >= 97 && req[p] <= 122)) {
@@ -522,7 +522,7 @@ int HTAB(int p, const char *req, node *pere) /* terminal */
         return false;
 }
 
-int VCHAR(int p, const char *req, node *pere) /* terminal */
+int VCHAR(int p, const unsigned char *req, node *pere) /* terminal */
 {
     if(req[p] != '\0') {
         if(req[p] >= 0x21 && req[p] <= 0x7E) {
