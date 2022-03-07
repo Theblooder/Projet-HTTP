@@ -2,7 +2,7 @@ TAR = Projet-HTTP-save
 IGNORE1 = .vscode
 IGNORE2 = get1
 IGNORE3 = httpparseur
-IGNORE4 = .gitignore
+IGNORE4 = .git
 
 
 
@@ -81,7 +81,7 @@ clean:
 	@echo Cleaning done !
 
 # Make a tar
-tar: clear
+tar: clean
 	dir=$$(basename $$PWD) && echo "compressing $(dir)" && cd .. && \
 	tar cvfz "$(TAR).tgz" \
 	--transform="s,^$$dir,$(TAR)," \

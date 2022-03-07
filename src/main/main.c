@@ -61,6 +61,5 @@ int main(int argc,char *argv[])
 		purgeTree(root);
 	}
 	close(fi);
-	//return(res); 
-	return 0;
+	return(res);
 }
