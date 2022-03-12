@@ -139,6 +139,7 @@ int cookie_value(int *p, const char *req, node *pere)
             return true;
         }
         else {
+            putValueInNode(save, *p-save, "cookie_value", pere);
             return true;
         }
     }

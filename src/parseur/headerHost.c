@@ -135,8 +135,10 @@ int IPv6address(int *p, const char *req, node *pere)
 
         if(h16(p, req, fils = createFils(pere))) {
             if(case_insensitive_char(p, req, createFils(pere), ':')) {
-                nbr++;
-                continue;
+                if(nbr < 6) {
+                    nbr++;
+                    continue;
+                }
             }
         }
         purgeNodeAndRightFrere(fils);
@@ -158,8 +160,10 @@ int IPv6address(int *p, const char *req, node *pere)
 
             if(h16(p, req, fils = createFils(pere))) {
                 if(case_insensitive_char(p, req, createFils(pere), ':')) {
-                    nbr++;
-                    continue;
+                    if(nbr < 5) {
+                        nbr++;
+                        continue;
+                    }
                 }
             }
             purgeNodeAndRightFrere(fils);
@@ -185,8 +189,10 @@ int IPv6address(int *p, const char *req, node *pere)
 
             if(h16(p, req, fils = createFils(pere))) {
                 if(case_insensitive_char(p, req, createFils(pere), ':')) {
-                    nbr++;
-                    continue;
+                    if(nbr < 4) {
+                        nbr++;
+                        continue;
+                    }
                 }
             }
             purgeNodeAndRightFrere(fils);
@@ -232,8 +238,10 @@ int IPv6address(int *p, const char *req, node *pere)
 
             if(h16(p, req, fils = createFils(pere))) {
                 if(case_insensitive_char(p, req, createFils(pere), ':')) {
-                    nbr++;
-                    continue;
+                    if(nbr < 3) {
+                        nbr++;
+                        continue;
+                    }
                 }
             }
             purgeNodeAndRightFrere(fils);
@@ -279,8 +287,10 @@ int IPv6address(int *p, const char *req, node *pere)
 
             if(h16(p, req, fils = createFils(pere))) {
                 if(case_insensitive_char(p, req, createFils(pere), ':')) {
-                    nbr++;
-                    continue;
+                    if(nbr < 2) {
+                        nbr++;
+                        continue;
+                    }
                 }
             }
             purgeNodeAndRightFrere(fils);
@@ -647,6 +657,7 @@ int reg_name(int *p, const char *req, node *pere)
 
     *p = save;
     purgeFilsAndFrere(pere);
+    putValueInNode(save, *p-save, "reg_name", pere);
     return true;
 }
 
@@ -673,5 +684,6 @@ int port(int *p, const char *req, node *pere)
 
     *p = save;
     purgeFilsAndFrere(pere);
+    putValueInNode(save, *p-save, "port", pere);
     return true;
 }

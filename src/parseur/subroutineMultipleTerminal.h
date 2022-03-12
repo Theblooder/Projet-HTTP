@@ -24,6 +24,7 @@
     int DQUOTE(int *p, const char *req, node *pere);
     int OWS(int *p, const char *req, node *pere);
     int BWS(int *p, const char *req, node *pere);
+    int RWS(int *p, const char *req, node *pere);
     int ALPHA(int *p, const unsigned char *req, node *pere);
     int DIGIT(int *p, const char *req, node *pere);
     int CRLF(int *p, const char *req, node *pere);

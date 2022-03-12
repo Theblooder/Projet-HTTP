@@ -18,16 +18,13 @@ void printTree(node *root, int height, const char *req)
     }
     value[p] = '\0';
 
-    if(root->tag[0] != '\0') {
+    if(root->length != 0) {
         for(int i=0; i<height; i++) {
             printf("    ");
         }
         printf("[%d:%s] = \"%s\"\n", height, root->tag, value);
         //printf("[%d:%s] = \"%.*s\"\n", height, root->tag, root->length, &req[root->pStart]);
         height++;
-    }
-    else {
-        printf("NOP\n");
     }
     if(root->fils != NULL) {
         printTree(root->fils, height, req);
@@ -50,6 +47,20 @@ void putValueInNode(int startPointeur, int length, char *tag, node *n)
         i++;
     }
     n->tag[i] = '\0';
+}
+
+node* createRoot()
+{
+    node *root = (node*) malloc(sizeof(node));
+
+    root->pere = NULL;
+    root->fils = NULL;
+    root->frere = NULL;
+    root->tag[0] = '\0';
+    root->pStart = 0;
+    root->length = 0;
+
+    return root;
 }
 
 node* createFils(node *pere)
@@ -77,10 +88,6 @@ node* createFils(node *pere)
         pere->fils = n;
     }
     return n;
-}
-
-node* createFrere(node *pere) {
-    
 }
 
 int purgeNodeAndRightFrere(node *pere)

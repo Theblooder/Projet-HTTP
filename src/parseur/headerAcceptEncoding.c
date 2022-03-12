@@ -49,6 +49,7 @@ int Accept_Encoding(int *p, const char *req, node *pere)
     else {
         *p = save;
         purgeFilsAndFrere(pere);
+        putValueInNode(save, *p-save, "Accept_Encoding", pere);
         return true;
     }
     int nbr = 0;
