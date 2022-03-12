@@ -8,7 +8,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "api.h" 
+#include "api.h"
+#include "tree.h"
 
 #define false 0 
 
@@ -20,7 +21,7 @@ int main(int argc,char *argv[])
 	
     struct stat st;
 	
-	if (argc < 3 ) { printf("Usage: httpparser <file> <search>\nAttention <search> is case sensitive\n"); exit(1); }
+	if (argc < 2 ) { printf("Usage: httpparser <file> [search]\nAttention [search] is case sensitive\n"); exit(1); }
 	/* ouverture du fichier contenant la requête */ 
 	if ((fi=open(argv[1],O_RDWR)) == -1) {
                 perror("open");
@@ -40,7 +41,7 @@ int main(int argc,char *argv[])
 			if (*p=='-') { *p='_'; }
 			p++; 
 		}
-		p=argv[2]; 	
+		p=argv[2];
 	}
 
 	// call parser and get results. 
@@ -48,16 +49,21 @@ int main(int argc,char *argv[])
 		_Token *r,*tok; 
 		void *root=NULL;
 		root=getRootTree();
-		r=searchTree(root,p); 
-		tok=r; 
-		while (tok) {
-			int l; 
-			char *s; 
-			s=getElementValue(tok->node,&l); 
-			printf("FOUND [%.*s]\n",l,s);
-			tok=tok->next;
+		if(argc == 2) {
+			printTree(root, 0, addr);
 		}
-		purgeElement(&r);
+		else {
+			r=searchTree(root,p); 
+			tok=r; 
+			while (tok) {
+				int l; 
+				char *s; 
+				s=getElementValue(tok->node,&l); 
+				printf("%s --> FOUND [%.*s]\n",p, l,s);
+				tok=tok->next;
+			}
+			purgeElement(&r);
+		}
 		purgeTree(root);
 	}
 	close(fi);

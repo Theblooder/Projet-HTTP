@@ -171,6 +171,7 @@ int query(int *p, const char *req, node *pere)
 
     *p = save;
     purgeFilsAndFrere(pere);
+    putValueInNode(save, *p-save, "query", pere);
     return true;
 }
 
@@ -299,5 +300,6 @@ int reason_phrase(int *p, const char *req, node *pere)
 
     *p = save;
     purgeFilsAndFrere(pere);
+    putValueInNode(save, *p-save, "reason_phrase", pere);
     return true;
 }
