@@ -1,10 +1,32 @@
-Version : 1.0
+# README.md
 
-Parseur pour vérifier la syntaxe HTTP :
+## Version 1.0
 
-Ne prends en compte que les headers suivant : Connection-header / Content-Length-header / Content-Type-header / Cookie-header / Transfer-Encoding-header / Expect-header / Host-header
+Parseur pour vérifier la syntaxe HTTP
 
-# Execution
+# Informations indispensables
 
-`make exe` next `./httpparseur <request> <token>`
+Le programme s’exécute de la manière suivante
 
+- `make`
+- `./httpparseur <file> [search]`
+
+Sans le [search] vous pourrez voir l’arbre des tokens.
+
+# Information complémentaire
+
+Seuls les headers suivant sont présents
+
+- Accept-Header
+- Accept_Charset_header
+- Accept_Encoding_header
+- Accept_Language_header
+- Connection_header
+- Content_Length_Header
+- Content_Type_header
+- Cookie_header
+- Expect_header
+- Host_header
+- Referer_header
+- Transfer_Encoding_header
+- User_Agent_header
