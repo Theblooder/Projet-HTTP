@@ -3,8 +3,8 @@
 
 /*Prototype*/
 
-int Content_Length_Header(int p, const char *req, node *pere);
+int Content_Length_Header(int *p, const char *req, node *pere);
 
-    int Content_Length(int p, const char *req, node *pere);
+    int Content_Length(int *p, const char *req, node *pere);
 
 #endif

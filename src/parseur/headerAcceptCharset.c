@@ -9,193 +9,103 @@
 #define true 1
 #define false 0
 
-int Accept_Charset_header(int p, const char *req, node *pere)
+int Accept_Charset_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Accept-Charset"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Accept-Charset")) {
+        if(case_insensitive_char(p, req, createFils(pere), ':')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(Accept_Charset(p, req, createFils(pere))) {
+                    if(OWS(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "Accept_Charset_header", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), ':'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = Accept_Charset(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Accept_Charset_header", pere);
-    return now-p;
-}
-
-int Accept_Charset(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-    node *fils;
-
-    int nbr = 0;
-    fils = createFils(pere);
-    while(len = case__AND__OWS(now, req, fils)) {
-        nbr++;
-        now += len;
-        fils = createFrere(fils);
-    }
-    purgeFilsAndFrere(fils);
-
-    if(!(len = __accept_Charset__2(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    nbr = 0;
-    while(len = __accept_Charset__3(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "Accept_Charset", pere);
-    return now-p;
-}
-
-int __accept_Charset__2(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = charset__OR__case(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = weight(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int charset__OR__case(int p, const char *req, node *pere)
-{
-    int len;
-    node *fils;
-
-    if(len = charset(p, req, fils = createFils(pere))) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_char(p, req, fils, '*')) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeNode(fils);
-        
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int charset(int p, const char *req, node *pere)
+int Accept_Charset(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
+    node *fils2;
+    node *fils3;
 
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    int nbr = 0;
+    int c;
+    while(1) {
+        c = *p;
+        if(case_insensitive_char(p, req, fils = createFils(pere), ',')) {
+            if(OWS(p, req, createFils(pere))) {
+                nbr++;
+                continue;
+            }
+        }
+        purgeNodeAndRightFrere(fils);
+        *p = c;
+        break;
     }
-    now += len;
+    if(nbr >= 0) {
+        fils = createFils(pere);
+        if(charset(p, req, fils) || case_insensitive_char(p, req, fils, '*')) {
+            if(!weight(p, req, fils = createFils(pere))) {
+                purgeNode(fils);
+            }
+            nbr = 0;
+            while(1) {
+                c = *p;
+                if(OWS(p, req, fils = createFils(pere))) {
+                    if(case_insensitive_char(p, req, createFils(pere), ',')) {
+                        int c2 = *p;
+                        if(OWS(p, req, fils2 = createFils(pere))) {
+                            fils3 = createFils(pere);
+                            if(charset(p, req, fils3) || case_insensitive_char(p, req, fils3, '*')) {
+                                if(!weight(p, req, fils3 = createFils(pere))) {
+                                    purgeNode(fils3);
+                                }
+                                nbr++;
+                                continue;
+                            }
+                        }
+                        *p = c2;
+                        purgeNodeAndRightFrere(fils2);
+                        nbr++;
+                        continue;
+                    }
+                }
+                purgeNodeAndRightFrere(fils);
+                *p = c;
+                break;
+            }
+            if(nbr >= 0) {
+                putValueInNode(save, *p-save, "Accept_Charset", pere);
+                return true;
+            }
+        }
+    }
 
-    putValueInNode(p, now-p, "charset", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int __accept_Charset__3(int p, const char *req, node *pere)
+int charset(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
+    if(token(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "charset", pere);
+        return true;
     }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils, ','))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = optional__accept_charset__3(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int optional__accept_charset__3(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = __accept_Charset__2(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }

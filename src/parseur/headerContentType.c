@@ -8,200 +8,130 @@
 #define true 1
 #define false 0
 
-int Content_Type_header(int p, const char *req, node *pere)
+int Content_Type_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Content-Type"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Content-Type")) {
+        if(case_insensitive_char(p, req, createFils(pere), ':')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(Content_Type(p, req, createFils(pere))) {
+                    if(OWS(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "Content_Type_header", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), ':'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = Content_Type(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Content_Type_header", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int Content_Type(int p, const char *req, node *pere)
+int Content_Type(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = media_type(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(media_type(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "Content_Type", pere);
+        return true;
     }
-    now += len;
 
-    putValueInNode(p, now-p, "Content_Type", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int media_type(int p, const char *req, node *pere)
+int media_type(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
+    if(type(p, req, createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), '/')) {
+            if(subtype(p, req, createFils(pere))) {
+                int nbr = 0;
+                int c;
+                while(1) {
+                    c = *p;
 
-    if(!(len = type(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+                    if(OWS(p, req, fils = createFils(pere))) {
+                        if(case_insensitive_char(p, req, createFils(pere), ';')) {
+                            if(OWS(p, req, fils = createFils(pere))) {
+                                if(parameter(p, req, createFils(pere))) {
+                                    nbr++;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    purgeNodeAndRightFrere(fils);
+                    *p = c;
+                    break;
+                }
+                if(nbr >= 0) {
+                    putValueInNode(save, *p-save, "media_type", pere);
+                    return true;
+                }
+            }
+        } 
     }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), '/'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = subtype(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = OWS__AND__case__AND__OWS__AND__parameter(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "media_type", pere);
-    return now-p;
+    
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int type(int p, const char *req, node *pere)
+int type(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(token(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "type", pere);
+        return true;
     }
-    now += len;
 
-    putValueInNode(p, now-p, "type", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int subtype(int p, const char *req, node *pere)
+int subtype(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(token(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "subtype", pere);
+        return true;
     }
-    now += len;
 
-    putValueInNode(p, now-p, "subtype", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int OWS__AND__case__AND__OWS__AND__parameter(int p, const char *req, node *pere)
+int parameter(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
+    if(token(p, req, createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), '=')) {
+            fils = createFils(pere);
+            if(token(p, req, fils)) {
+                putValueInNode(save, *p-save, "parameter", pere);
+                return true;
+            }
+            else if(quoted_string(p, req, fils)) {
+                putValueInNode(save, *p-save, "parameter", pere);
+                return true;
+            }
+        }
     }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, ';'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = parameter(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int parameter(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), '='))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = token__AND__quoted_string(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "parameter", pere);
-    return now-p;
+    
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }

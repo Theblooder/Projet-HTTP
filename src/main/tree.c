@@ -22,9 +22,12 @@ void printTree(node *root, int height, const char *req)
         for(int i=0; i<height; i++) {
             printf("    ");
         }
-        printf("[%d: %s] = \"%s\"\n", height, root->tag, value);
+        printf("[%d:%s] = \"%s\"\n", height, root->tag, value);
         //printf("[%d:%s] = \"%.*s\"\n", height, root->tag, root->length, &req[root->pStart]);
         height++;
+    }
+    else {
+        printf("NOP\n");
     }
     if(root->fils != NULL) {
         printTree(root->fils, height, req);
@@ -56,23 +59,44 @@ node* createFils(node *pere)
     n->fils = NULL;
     n->frere = NULL;
     n->pere = pere;
+    n->tag[0] = '\0';
+    n->pStart = 0;
+    n->length = 0;  
 
-    pere->fils = n;
+    if(pere->fils != NULL) {
+        node *actual = pere->fils;
+        node *precedent = NULL;
 
+        while(actual->frere != NULL) {
+            precedent = actual;
+            actual = actual->frere;
+        }
+        actual->frere = n;
+    }
+    else {
+        pere->fils = n;
+    }
     return n;
 }
 
-node* createFrere(node *frere)
+node* createFrere(node *pere) {
+    
+}
+
+int purgeNodeAndRightFrere(node *pere)
 {
-    node *n = (node*) malloc(sizeof(node));
+    node *actual = pere;
+    node *precedent = NULL;
 
-    n->fils = NULL;
-    n->frere = NULL;
-    n->pere = frere->pere;
+    while(actual->frere != NULL) {
+        precedent = actual;
+        actual = actual->frere;
 
-    frere->frere = n;
+        purgeNode(precedent);
+    }
+    purgeNode(actual);
 
-    return n;
+    return 0;
 }
 
 int purgeFilsAndFrere(node *pere)
@@ -96,7 +120,6 @@ int purgeFilsAndFrere(node *pere)
 
         pere->fils = NULL;
     }
-
     return 0;
 }
 

@@ -8,238 +8,175 @@
 #define true 1
 #define false 0
 
-int Cookie_header(int p, const char *req, node *pere)
+int Cookie_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Cookie:"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Cookie:")) {
+        if(OWS(p, req, createFils(pere))) {
+            if(cookie_string(p, req, createFils(pere))) {
+                if(OWS(p, req, createFils(pere))) {
+                    putValueInNode(save, *p-save, "Cookie_header", pere);
+                    return true;
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = cookie_string(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Cookie_header", pere);
-    return now-p;
-}
-
-int cookie_string(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = cookie_pair(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = case__AND__SP__AND__cookie_pair(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "cookie_string", pere);
-    return now-p;
-}
-
-int cookie_pair(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = cookie_name(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), '='))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = cookie_value(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "cookie_pair", pere);
-    return now-p;
-}
-
-int cookie_name(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "cookie_name", pere);
-    return now-p;
-}
-
-int cookie_value(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-    node *fils;
-
-    if(len = DQUOTE__AND__cookie_octet__AND__DQUOTE(p, req, fils = createFils(pere))) {
-        putValueInNode(p, len, "cookie_value", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    int nbr = 0;
-    while(len = cookie_octet(now, req, fils)) {
-        nbr++;
-        now += len;
-        fils = createFrere(fils);
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    if(now-p != 0)
-        putValueInNode(p, now-p, "cookie_value", pere);
-    return now-p;
-}
-
-int DQUOTE__AND__cookie_octet__AND__DQUOTE(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = DQUOTE(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = cookie_octet(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-
-    if(!(len = DQUOTE(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int cookie_octet(int p, const char *req, node *pere)
-{
-    int len;
-    node *fils;
-
-    int v[1] = {0x21};
-    if(len = num(p, req, fils = createFils(pere), v, 1)) {
-        putValueInNode(p, len, "cookie_octet", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = range(p, req, fils, 0x23, 0x2B)) {
-        putValueInNode(p, len, "cookie_octet", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = range(p, req, fils, 0x2D, 0x3A)) {
-        putValueInNode(p, len, "cookie_octet", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = range(p, req, fils, 0x3C, 0x5B)) {
-        putValueInNode(p, len, "cookie_octet", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = range(p, req, fils, 0x5D, 0x7E)) {
-        putValueInNode(p, len, "cookie_octet", pere);
-        return len;
-    }
-    else
-        purgeNode(fils);
-        
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int case__AND__SP__AND__cookie_pair(int p, const char *req, node *pere)
+int cookie_string(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
+    if(cookie_pair(p, req, createFils(pere))) {
+        int nbr = 0;
+        int c;
+        while(1) {
+            c = *p;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), ';'))) {
-        purgeNode(fils);
-        return false;
+            if(case_insensitive_char(p, req, fils = createFils(pere), ';')) {
+                if(SP(p, req, createFils(pere))) {
+                    if(cookie_pair(p, req, createFils(pere))) {
+                        nbr++;
+                        continue;
+                    }
+                }
+            }
+            purgeNodeAndRightFrere(fils);
+            *p = c;
+            break;
+        }
+        if(nbr >= 0) {
+            putValueInNode(save, *p-save, "cookie_string", pere);
+            return true;
+        }
     }
-    now += len;
+    
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
+}
 
-    if(!(len = SP(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
+int cookie_pair(int *p, const char *req, node *pere)
+{
+    int save = *p;
+
+    if(cookie_name(p, req, createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), '=')) {
+            if(cookie_value(p, req, createFils(pere))) {
+                putValueInNode(save, *p-save, "cookie_pair", pere);
+                return true;
+            }
+        }
     }
-    now += len;
 
-    if(!(len = cookie_pair(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
+}
+
+int cookie_name(int *p, const char *req, node *pere)
+{
+    int save = *p;
+
+    if(token(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "cookie_name", pere);
+        return true;
     }
-    now += len;
 
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
+}
+
+int cookie_value(int *p, const char *req, node *pere)
+{
+    int save = *p;
+
+    node *fils;
+
+    if(DQUOTE(p, req, fils = createFils(pere))) {
+        int nbr = 0;
+        node *fils2;
+        while(1) {
+            if(cookie_octet(p, req, fils2 = createFils(pere))) {
+                nbr++;
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+        purgeNode(fils2);
+        if(nbr >= 0) {
+            if(DQUOTE(p, req, createFils(pere))) {
+                putValueInNode(save, *p-save, "cookie_value", pere);
+                return true;
+            }
+        }
+    }
+    else if(1 == 1) {
+        purgeNodeAndRightFrere(fils);
+        int nbr = 0;
+        node *fils2;
+        while(1) {
+            if(cookie_octet(p, req, fils2 = createFils(pere))) {
+                nbr++;
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+        purgeNode(fils2);
+        if(nbr >= 1) {
+            putValueInNode(save, *p-save, "cookie_value", pere);
+            return true;
+        }
+        else {
+            return true;
+        }
+    }
+
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
+}
+
+int cookie_octet(int *p, const char *req, node *pere)
+{
+    int save = *p;
+
+    node *fils = createFils(pere);
+
+    int v[1] = {0x21};
+    if(num(p, req, fils, v, 1)) {
+        putValueInNode(save, *p-save, "cookie_octet", pere);
+        return true;
+    }
+    else if(range(p, req, fils, 0x23, 0x2B)) {
+        putValueInNode(save, *p-save, "cookie_octet", pere);
+        return true;
+    }
+    else if(range(p, req, fils, 0x2D, 0x3A)) {
+        putValueInNode(save, *p-save, "cookie_octet", pere);
+        return true;
+    }
+    else if(range(p, req, fils, 0x3C, 0x5B)) {
+        putValueInNode(save, *p-save, "cookie_octet", pere);
+        return true;
+    }
+    else if(range(p, req, fils, 0x5D, 0x7E)) {
+        putValueInNode(save, *p-save, "cookie_octet", pere);
+        return true;
+    }
+
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }

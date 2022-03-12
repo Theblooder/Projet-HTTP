@@ -9,213 +9,116 @@
 #define true 1
 #define false 0
 
-int Accept_Encoding_header(int p, const char *req, node *pere)
+int Accept_Encoding_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Accept-Encoding"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Accept-Encoding")) {
+        if(case_insensitive_char(p, req, createFils(pere), ':')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(Accept_Encoding(p, req, createFils(pere))) {
+                    if(OWS(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "Accept_Encoding_header", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), ':'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = Accept_Encoding(now, req, fils))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Accept_Encoding_header", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int Accept_Encoding(int p, const char *req, node *pere)
+int Accept_Encoding(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils = createFils(pere);
+    node *fils2;
+    node *fils3;
 
-    node *fils;
-
-    if(!(len = __accept_Encoding__1(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_char(p, req, fils, ',')) {
+        1 == 1;
     }
-    now += len;
-
+    else if(codings(p, req, fils)) {
+        if(!weight(p, req, fils2 = createFils(pere))) {
+            purgeNode(fils2);
+        }
+    }
+    else {
+        *p = save;
+        purgeFilsAndFrere(pere);
+        return true;
+    }
     int nbr = 0;
-    while(len = __accept_Encoding__2(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
+    int c;
+    while(1) {
+        c = *p;
+        if(OWS(p, req, fils = createFils(pere))) {
+            if(case_insensitive_char(p, req, createFils(pere), ',')) {
+                int c2 = *p;
+                if(OWS(p, req, fils2 = createFils(pere))) {
+                    if(codings(p, req, createFils(pere))) {
+                        if(weight(p, req, fils3 = createFils(pere))) {
+                            nbr++;
+                            continue;
+                        }
+                        purgeNode(fils3);
+                        nbr++;
+                        continue;
+                    }
+                }
+                *p = c2;
+                purgeNodeAndRightFrere(fils2);
+                nbr++;
+                continue;
+            }
+        }
+        purgeNodeAndRightFrere(fils);
+        *p = c;
+        break;
     }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "Accept_Encoding", pere);
-    return now-p;
+    if(nbr >= 0) {
+        putValueInNode(save, *p-save, "Accept_Encoding", pere);
+        return true;
+    }
 }
 
-int __accept_Encoding__1(int p, const char *req, node *pere)
+int codings(int *p, const char *req, node *pere)
 {
-    int len;
-    node *fils;
+    int save = *p;
 
-    if(len = case_insensitive_char(p, req, fils = createFils(pere), ',')) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
+    node *fils = createFils(pere);
 
-    if(len = codings__AND__weight(p, req, fils)) {
-        putValueInNode(p, len, "", pere);
-        return len;
+    if(content_coding(p, req, fils)) {
+        putValueInNode(save, *p-save, "codings", pere);
+        return true;
     }
-    else
-        purgeNode(fils);
-        
+    else if(case_insensitive_string(p, req, fils, "identity")) {
+        putValueInNode(save, *p-save, "codings", pere);
+        return true;
+    }
+    else if(case_insensitive_char(p, req, fils, '*')) {
+        putValueInNode(save, *p-save, "codings", pere);
+        return true;
+    }
+
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int codings__AND__weight(int p, const char *req, node *pere)
+int content_coding(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = codings(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(token(p, req, createFils(pere))) {
+        putValueInNode(save, *p-save, "content_coding", pere);
+        return true;
     }
-    now += len;
 
-    if(!(len = weight(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int codings(int p, const char *req, node *pere)
-{
-    int len;
-    node *fils;
-
-    if(len = content_coding(p, req, fils = createFils(pere))) {
-        putValueInNode(p, len, "codings", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_string(p, req, fils, "identity")) {
-        putValueInNode(p, len, "codings", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_char(p, req, fils, '*')) {
-        putValueInNode(p, len, "codings", pere);
-        return len;
-    }
-    else
-        purgeNode(fils);
-        
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
-}
-
-int content_coding(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "content_coding", pere);
-    return now-p;
-}
-
-int __accept_Encoding__2(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, ','))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = optional__accept_Encoding__2(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int optional__accept_Encoding__2(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = codings__AND__weight(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
 }

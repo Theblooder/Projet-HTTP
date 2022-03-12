@@ -14,11 +14,13 @@ struct node {
     node *pere;
 };
 
+node* createFrere(node *pere);
+
 
 void printTree(node *root, int height, const char *req);
 void putValueInNode(int startPointeur, int length, char *tag, node *n);
 node* createFils(node *pere);
-node* createFrere(node *frere);
+int purgeNodeAndRightFrere(node *pere);
 int purgeFilsAndFrere(node *pere);
 int purgeNode(node *noden);
 
