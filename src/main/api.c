@@ -23,9 +23,12 @@ int parseur(char *req, int len)
     root->pere = NULL;
     root->fils = NULL;
     root->frere = NULL;
+    root->tag[0] = '\0';
+    root->pStart = 0;
+    root->length = 0;
 
-    int length;    
-    if(length = HTTP_message(0, req, root)) {
+    int length = 0;    
+    if(HTTP_message(&length, req, root)) {
         printTree(root, 0, req);
         return true;
     }
@@ -54,7 +57,6 @@ _Token *searchTree(void *start, char *name)
     _searchTree(_root, name, &l);
 
     return l;
-    
 }
 
 char *getElementTag(void *n, int *len)

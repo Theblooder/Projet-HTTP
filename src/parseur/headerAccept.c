@@ -9,535 +9,281 @@
 #define true 1
 #define false 0
 
-int Accept_header(int p, const char *req, node *pere)
+int Accept_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Accept"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Accept")) {
+        if(case_insensitive_char(p, req, createFils(pere), ':')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(Accept(p, req, createFils(pere))) {
+                    if(OWS(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "Accept_header", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), ':'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = Accept(now, req, fils))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Accept_header", pere);
-    return now-p;
-}
-
-int Accept(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = __accept__1(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = __accept__2(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "Accept_header", pere);
-    return now-p;
-}
-
-int __accept__1(int p, const char *req, node *pere)
-{
-    int len;
-    node *fils;
-
-    if(len = case_insensitive_char(p, req, fils = createFils(pere), ',')) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = media_range__AND__accept_params(p, req, fils)) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeNode(fils);
-        
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int media_range__AND__accept_params(int p, const char *req, node *pere)
+int Accept(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils = createFils(pere);
+    node *fils2;
+    node *fils3;
 
-    node* fils;
-
-    if(!(len = media_range(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_char(p, req, fils, ',')) {
+        1 == 1;
     }
-    now += len;
-
-    if(!(len = accept_params(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
+    else if(media_range(p, req, fils)) {
+        if(!accept_params(p, req, fils2 = createFils(pere))) {
+            purgeNode(fils2);
+        }
     }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int media_range(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = __media_range__1(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+    else {
+        *p = save;
+        purgeFilsAndFrere(pere);
+        return true;
     }
-    now += len;
-
     int nbr = 0;
-    while(len = OWS__AND__case__AND__OWS__AND__parameter(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
+    int c;
+    while(1) {
+        c = *p;
+        if(OWS(p, req, fils = createFils(pere))) {
+            if(case_insensitive_char(p, req, createFils(pere), ',')) {
+                int c2 = *p;
+                if(OWS(p, req, fils2 = createFils(pere))) {
+                    if(media_range(p, req, createFils(pere))) {
+                        if(accept_params(p, req, fils3 = createFils(pere))) {
+                            nbr++;
+                            continue;
+                        }
+                        purgeNode(fils3);
+                        nbr++;
+                        continue;
+                    }
+                }
+                *p = c2;
+                purgeNodeAndRightFrere(fils2);
+                nbr++;
+                continue;
+            }
+        }
+        purgeNodeAndRightFrere(fils);
+        *p = c;
+        break;
     }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "media_range", pere);
-    return now-p;
+    if(nbr >= 0) {
+        putValueInNode(save, *p-save, "Accept", pere);
+        return true;
+    }
 }
 
-int __media_range__1(int p, const char *req, node *pere)
+int media_range(int *p, const char *req, node *pere)
 {
-    int len;
+    int save = *p;
     node *fils;
+    int pass = 0;
 
-    if(len = case_insensitive_string(p, req, fils = createFils(pere), "*/*")) {
-        putValueInNode(p, len, "", pere);
-        return len;
+    if(case_insensitive_string(p, req, fils = createFils(pere), "*/*")) {
+        pass = 1;
     }
-    else
-        purgeFilsAndFrere(fils);
+    if(!pass && type(p, req, fils = createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), '/')) {
+            if(subtype(p, req, createFils(pere))) {
+                pass = 1;
+            }
+        }
+    }
+    if(!pass) {
+        *p = save;
+        purgeNodeAndRightFrere(fils);
+        if(type(p, req, createFils(pere))) {
+            if(case_insensitive_string(p, req, createFils(pere), "/*")) {
+                pass = 1;
+            }
+        }
+    }
 
-    if(len = type__AND__case__AND__subtype(p, req, fils)) {
-        putValueInNode(p, len, "", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
+    if(pass) {
+        int nbr = 0;
+        int c;
+        while(1) {
+            c = *p;
 
-    if(len = type__AND__case(p, req, fils)) {
-        putValueInNode(p, len, "", pere);
-        return len;
+            if(OWS(p, req, fils = createFils(pere))) {
+                if(case_insensitive_char(p, req, createFils(pere), ';')) {
+                    if(OWS(p, req, createFils(pere))) {
+                        if(parameter(p, req, createFils(pere))) {
+                            nbr++;
+                            continue;
+                        }
+                    }
+                }
+            }
+            purgeNodeAndRightFrere(fils);
+            *p = c;
+            break;
+        }
+        if(nbr >= 0) {
+            putValueInNode(save, *p-save, "media_range", pere);
+            return true;
+        }
     }
-    else
-        purgeNode(fils);
-        
+
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int type__AND__case__AND__subtype(int p, const char *req, node *pere)
+int accept_params(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = type(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), '/'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = subtype(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int type__AND__case(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = type(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFrere(fils), "/*"))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int accept_params(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = weight(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = accept_ext(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-
-    putValueInNode(p, now-p, "accept_params", pere);
-    return now-p;
-}
-
-int weight(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, ';'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_string(now, req, fils, "q="))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = qvalue(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "weight", pere);
-    return now-p;
-}
-
-int qvalue(int p, const char *req, node *pere)
-{
-    int len;
+    int save = *p;
     node *fils;
 
-    if(len = qvalue__1(p, req, fils = createFils(pere))) {
-        putValueInNode(p, len, "qvalue", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = qvalue__2(p, req, fils)) {
-        putValueInNode(p, len, "qvalue", pere);
-        return len;
-    }
-    else
+    if(weight(p, req, createFils(pere))) {
+        int nbr = 0;
+        while(1) {
+            if(accept_ext(p, req, fils = createFils(pere))) {
+                nbr++;
+                continue;
+            }
+            else {
+                break;
+            }
+        }
         purgeNode(fils);
-        
+        if(nbr >= 0) {
+            putValueInNode(save, *p-save, "accept_params", pere);
+            return true;
+        }
+    }
+    
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int qvalue__1(int p, const char *req, node *pere)
+int weight(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '0'))) {
-        purgeNode(fils);
-        return false;
+    if(OWS(p, req, createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), ';')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(case_insensitive_string(p, req, createFils(pere), "q=")) {
+                    if(qvalue(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "weight", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = optional__case__AND__3DIGITS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int optional__case__AND__3DIGITS(int p, const char *req, node *pere)
+int qvalue(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '.'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
+    node *fils;
+    node *fils2;
 
     int nbr = 0;
-    while(len = DIGIT(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
+    int c;
+
+    if(case_insensitive_char(p, req, createFils(pere), '0')) {
+        c = *p;
+        if(case_insensitive_char(p, req, fils = createFils(pere), '.')) {
+            while(1) {
+                if(DIGIT(p, req, fils2 = createFils(pere))) {
+                    nbr++;
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+            purgeNode(fils2);
+            if(nbr <= 3) {
+                putValueInNode(save, *p-save, "qvalue", pere);
+                return true;
+            }
+        }
+        *p = c;
+        purgeNodeAndRightFrere(fils);
+        putValueInNode(save, *p-save, "qvalue", pere);
+        return true;
     }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-    if(nbr > 3) {
-        return false;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    nbr = 0;
+    if(case_insensitive_char(p, req, createFils(pere), '1')) {
+        c = *p;
+        if(case_insensitive_char(p, req, fils = createFils(pere), '.')) {
+            while(1) {
+                if(case_insensitive_char(p, req, fils2 = createFils(pere), '0')) {
+                    nbr++;
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+            purgeNode(fils2);
+            if(nbr <= 3) {
+                putValueInNode(save, *p-save, "qvalue", pere);
+                return true;
+            }
+        }
+        *p = c;
+        purgeNodeAndRightFrere(fils);
+        putValueInNode(save, *p-save, "qvalue", pere);
+        return true;
     }
 
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int qvalue__2(int p, const char *req, node *pere)
+int accept_ext(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '1'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = optional__case__AND__3ZERO(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int optional__case__AND__3ZERO(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '.'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    int nbr = 0;
-    while(len = case_insensitive_char(now, req, fils = createFrere(fils), '0')) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-    if(nbr > 3) {
-        return false;
+    if(OWS(p, req, createFils(pere))) {
+        if(case_insensitive_char(p, req, createFils(pere), ';')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(token(p, req, createFils(pere))) {
+                    int c = *p;
+                    if(case_insensitive_char(p, req, fils = createFils(pere), '=')) {
+                        node *fils2 = createFils(pere);
+                        if(token(p, req, fils2) || quoted_string(p, req, fils2)) {
+                            putValueInNode(save, *p-save, "accept_ext", pere);
+                            return true;
+                        }
+                    }
+                    *p = c;
+                    purgeNodeAndRightFrere(fils);
+                    putValueInNode(save, *p-save, "accept_ext", pere);
+                    return true;
+                }
+            }
+        }
     }
 
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int accept_ext(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, ';'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = token(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = optional__case__AND__token__AND__case__quoted_string(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "accept_ext", pere);
-    return now-p;
-}
-
-int optional__case__AND__token__AND__case__quoted_string(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = case_insensitive_char(now, req, fils = createFils(pere), '='))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = token__AND__quoted_string(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int __accept__2(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, ','))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = optional__accept__2(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int optional__accept__2(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = media_range__AND__accept_params(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }

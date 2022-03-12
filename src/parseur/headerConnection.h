@@ -3,15 +3,10 @@
 
 /*Prototype*/
 
-int Connection_header(int p, const char *req, node *pere);
+int Connection_header(int *p, const char *req, node *pere);
 
-    int Connection(int p, const char *req, node *pere);
+    int Connection(int *p, const char *req, node *pere);
 
-        int connection_option(int p, const char *req, node *pere);
-
-        int OWS__AND__case__AND__optional(int p, const char *req, node *pere);
-
-            int OWS__AND__connection_option(int p, const char *req, node *pere);
-
+        int connection_option(int *p, const char *req, node *pere);
 
 #endif

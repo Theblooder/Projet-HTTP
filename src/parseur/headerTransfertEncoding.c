@@ -9,284 +9,176 @@
 #define false 0
 
 
-int Transfer_Encoding_header(int p, const char *req, node *pere)
+int Transfer_Encoding_header(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
-
-    if(!(len = case_insensitive_string(now, req, fils = createFils(pere), "Transfer-Encoding"))) {
-        purgeNode(fils);
-        return false;
+    if(case_insensitive_string(p, req, createFils(pere), "Transfer-Encoding")) {
+        if(case_insensitive_char(p, req, createFils(pere), ':')) {
+            if(OWS(p, req, createFils(pere))) {
+                if(Transfer_Encoding(p, req, createFils(pere))) {
+                    if(OWS(p, req, createFils(pere))) {
+                        putValueInNode(save, *p-save, "Transfer_Encoding_header", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils = createFrere(fils), ':'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = Transfer_Encoding(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "Transfer_Encoding_header", pere);
-    return now-p;
-}
-
-int Transfer_Encoding(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-    node *fils;
-
-    int nbr = 0;
-    fils = createFils(pere);
-    while(len = case__AND__OWS(now, req, fils)) {
-        nbr++;
-        now += len;
-        fils = createFrere(fils);
-    }
-    purgeFilsAndFrere(fils);
-
-    if(!(len = transfer_coding(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    nbr = 0;
-    while(len = OWS__AND__case__AND__optional_transfert_coding(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
-    }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
-    
-    putValueInNode(p, now-p, "Transfer_Encoding", pere);
-    return now-p;
-}
-
-int transfer_coding(int p, const char *req, node *pere)
-{
-    int len;
-    node *fils;
-
-    if(len = case_insensitive_string(p, req, fils = createFils(pere), "chunked")) {
-        putValueInNode(p, len, "transfer_coding", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_string(p, req, fils, "compress")) {
-        putValueInNode(p, len, "transfer_coding", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_string(p, req, fils, "deflate")) {
-        putValueInNode(p, len, "transfer_coding", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = case_insensitive_string(p, req, fils, "gzip")) {
-        putValueInNode(p, len, "transfer_coding", pere);
-        return len;
-    }
-    else
-        purgeFilsAndFrere(fils);
-
-    if(len = transfer_extension(p, req, fils)) {
-        putValueInNode(p, len, "transfer_coding", pere);
-        return len;
-    }
-    else
-        purgeNode(fils);
-        
+    *p = save;
+    purgeFilsAndFrere(pere);
     return false;
 }
 
-int transfer_extension(int p, const char *req, node *pere)
+int Transfer_Encoding(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
+    int save = *p;
+    node *fils;
+    node *fils2;
 
     int nbr = 0;
-    while(len = OWS__AND__case__AND__OWS__AND__transfert(now, req, fils = createFrere(fils))) {
-        nbr++;
-        now += len;
+    int c;
+    while(1) {
+        c = *p;
+        if(case_insensitive_char(p, req, fils = createFils(pere), ',')) {
+            if(OWS(p, req, createFils(pere))) {
+                nbr++;
+                continue;
+            }
+        }
+        purgeNodeAndRightFrere(fils);
+        *p = c;
+        break;
     }
-    purgeFilsAndFrere(fils);
-    purgeNode(fils);
+    if(nbr >= 0) {
+        if(transfer_coding(p, req, createFils(pere))) {
+            nbr = 0;
+            while(1) {
+                c = *p;
+                if(OWS(p, req, fils = createFils(pere))) {
+                    if(case_insensitive_char(p, req, createFils(pere), ',')) {
+                        int c2 = *p;
+                        if(OWS(p, req, fils2 = createFils(pere))) {
+                            if(transfer_coding(p, req, createFils(pere))) {
+                                nbr++;
+                                continue;
+                            }
+                        }
+                        *p = c2;
+                        purgeNodeAndRightFrere(fils2);
+                        nbr++;
+                        continue;
+                    }
+                }
+                purgeNodeAndRightFrere(fils);
+                *p = c;
+                break;
+            }
+            if(nbr >= 0) {
+                putValueInNode(save, *p-save, "Transfer_Encoding", pere);
+                return true;
+            }
+        }
+    }
 
-    putValueInNode(p, now-p, "transfer_extension", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int OWS__AND__case__AND__OWS__AND__transfert(int p, const char *req, node *pere)
+int transfer_coding(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
 
-    node* fils;
+    node *fils = createFils(pere);
 
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
+    if(case_insensitive_string(p, req, fils, "chunked")) {
+        putValueInNode(save, *p-save, "transfer_coding", pere);
+        return true;
     }
-    else {
-        fils = createFrere(fils);
+    else if(case_insensitive_string(p, req, fils, "compress")) {
+        putValueInNode(save, *p-save, "transfer_coding", pere);
+        return true;
     }
-    now += len;
+    else if(case_insensitive_string(p, req, fils, "deflate")) {
+        putValueInNode(save, *p-save, "transfer_coding", pere);
+        return true;
+    }
+    else if(case_insensitive_string(p, req, fils, "gzip")) {
+        putValueInNode(save, *p-save, "transfer_coding", pere);
+        return true;
+    }
+    else if(transfer_extension(p, req, fils)) {
+        putValueInNode(save, *p-save, "transfer_coding", pere);
+        return true;
+    }
 
-    if(!(len = case_insensitive_char(now, req, fils, ';'))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = transfert_parameter(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int transfert_parameter(int p, const char *req, node *pere)
+int transfer_extension(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
+    if(token(p, req, createFils(pere))) {
+        int nbr = 0;
+        int c;
+        while(1) {
+            c = *p;
 
-    if(!(len = token(now, req, fils = createFils(pere)))) {
-        purgeNode(fils);
-        return false;
+            if(OWS(p, req, fils = createFils(pere))) {
+                if(case_insensitive_char(p, req, createFils(pere), ';')) {
+                    if(OWS(p, req, createFils(pere))) {
+                        if(transfert_parameter(p, req, createFils(pere))) {
+                            nbr++;
+                            continue;
+                        }
+                    }
+                }
+            }
+            purgeNodeAndRightFrere(fils);
+            *p = c;
+            break;
+        }
+        if(nbr >= 0) {
+            putValueInNode(save, *p-save, "transfer_extension", pere);
+            return true;
+        }
     }
-    now += len;
-
-    if(!(len = BWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = case_insensitive_char(now, req, fils, '='))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = BWS(now, req, fils = createFrere(fils)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = token__AND__quoted_string(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "transfert_parameter", pere);
-    return now-p;
+    
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
 
-int OWS__AND__case__AND__optional_transfert_coding(int p, const char *req, node *pere)
+int transfert_parameter(int *p, const char *req, node *pere)
 {
-    int len;
-    int now = p;
+    int save = *p;
+    node *fils;
 
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
+    if(token(p, req, createFils(pere))) {
+        if(BWS(p, req, createFils(pere))) {
+            if(case_insensitive_char(p, req, createFils(pere), '=')) {
+                if(BWS(p, req, createFils(pere))) {
+                    fils = createFils(pere);
+                    if(token(p, req, fils)) {
+                        putValueInNode(save, *p-save, "transfert_parameter", pere);
+                        return true;
+                    }
+                    else if(quoted_string(p, req, fils)) {
+                        putValueInNode(save, *p-save, "transfert_parameter", pere);
+                        return true;
+                    }
+                }
+            }
+        }
     }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
 
-    if(!(len = case_insensitive_char(now, req, fils, ','))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    if(!(len = OWS__AND__transfert_coding(now, req, fils = createFrere(fils)))) {
-        purgeNode(fils);
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
-}
-
-int OWS__AND__transfert_coding(int p, const char *req, node *pere)
-{
-    int len;
-    int now = p;
-
-    node* fils;
-
-    if(!(len = OWS(now, req, fils = createFils(pere)))) {
-        purgeFilsAndFrere(fils);
-    }
-    else {
-        fils = createFrere(fils);
-    }
-    now += len;
-
-    if(!(len = transfer_coding(now, req, fils))) {
-        purgeNode(fils);
-        return false;
-    }
-    now += len;
-
-    putValueInNode(p, now-p, "", pere);
-    return now-p;
+    *p = save;
+    purgeFilsAndFrere(pere);
+    return false;
 }
