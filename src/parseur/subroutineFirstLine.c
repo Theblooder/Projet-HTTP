@@ -27,7 +27,7 @@ int start_line(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -51,7 +51,7 @@ int request_line(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -65,7 +65,7 @@ int method(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -79,7 +79,7 @@ int request_target(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -103,7 +103,7 @@ int origin_form(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -133,7 +133,7 @@ int absolute_path(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -170,7 +170,7 @@ int query(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "query", pere);
     return true;
 }
@@ -193,7 +193,7 @@ int HTTP_version(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -208,7 +208,7 @@ int HTTP_name(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -232,7 +232,7 @@ int status_line(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -258,7 +258,7 @@ int status_code(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -299,7 +299,7 @@ int reason_phrase(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "reason_phrase", pere);
     return true;
 }

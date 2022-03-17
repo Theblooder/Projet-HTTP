@@ -35,7 +35,7 @@ void printTree(node *root, int height, const char *req)
             actual = actual->frere;
         }
     }
-}
+}   
 
 void putValueInNode(int startPointeur, int length, char *tag, node *n)
 {
@@ -106,16 +106,16 @@ int purgeNodeAndRightFrere(node *pere)
     return 0;
 }
 
-int purgeFilsAndFrere(node *pere)
+int purgeFils(node *pere)
 {
     if(pere->fils != NULL) {
         node *actual = pere->fils;
         node *precedent = NULL;
 
-        purgeFilsAndFrere(pere->fils);
+        purgeFils(pere->fils);
 
         while(actual->frere != NULL) {
-            purgeFilsAndFrere(actual->frere);
+            purgeFils(actual->frere);
             precedent = actual;
             actual = actual->frere;
             
@@ -138,7 +138,7 @@ int purgeFilsAndFrere(node *pere)
  */
 int purgeNode(node *n)
 {
-    purgeFilsAndFrere(n);
+    purgeFils(n);
     if(n->pere != NULL) {
         node *actual = n->pere->fils;
         node *precedent = NULL;

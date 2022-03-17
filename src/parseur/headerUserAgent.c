@@ -26,7 +26,7 @@ int User_Agent_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -59,7 +59,7 @@ int User_Agent(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -83,7 +83,7 @@ int product(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -97,7 +97,7 @@ int product_version(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -138,7 +138,7 @@ int comment(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -174,6 +174,6 @@ int ctext(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

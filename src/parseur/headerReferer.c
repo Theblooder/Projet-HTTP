@@ -28,7 +28,7 @@ int Referer_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -48,7 +48,7 @@ int Referer(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -76,7 +76,7 @@ int absolute_URI(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -123,7 +123,7 @@ int scheme(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -158,7 +158,7 @@ int hier_part(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -193,7 +193,7 @@ int authority(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -234,7 +234,7 @@ int userinfo(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "userinfo", pere);
     return true;
 }
@@ -265,7 +265,7 @@ int path_abempty(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "path_abempty", pere);
     return true;
 }
@@ -306,7 +306,7 @@ int path_absolute(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -332,7 +332,7 @@ int segment_nz(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -364,7 +364,7 @@ int path_rootless(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -396,7 +396,7 @@ int partial_URI(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -431,7 +431,7 @@ int relative_part(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -463,7 +463,7 @@ int path_noscheme(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -504,6 +504,6 @@ int segment_nz_nc(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

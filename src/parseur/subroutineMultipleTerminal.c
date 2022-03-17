@@ -32,7 +32,7 @@ int token(int *p, const char *req, node *pere) /* Multiple times */
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -112,7 +112,7 @@ int tchar(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -138,7 +138,7 @@ int segment(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "segment", pere);
     return true;
 }
@@ -171,7 +171,7 @@ int pchar(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -207,7 +207,7 @@ int unreserved(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -225,7 +225,7 @@ int pct_encoded(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -281,7 +281,7 @@ int sub_delims(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -295,7 +295,7 @@ int obs_text(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -342,7 +342,7 @@ int HEXDIG(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -356,7 +356,7 @@ int OCTET(int *p, const unsigned char *req, node *pere)
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -371,7 +371,7 @@ int DQUOTE(int *p, const char *req, node *pere)
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -405,7 +405,7 @@ int OWS(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "OWS", pere);
     return true;
 }
@@ -420,7 +420,7 @@ int BWS(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -453,7 +453,7 @@ int RWS(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -467,7 +467,7 @@ int ALPHA(int *p, const unsigned char *req, node *pere)
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -482,7 +482,7 @@ int DIGIT(int *p, const char *req, node *pere)
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -497,7 +497,7 @@ int CRLF(int *p, const char *req, node *pere) /* terminal */
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -512,7 +512,7 @@ int SP(int *p, const char *req, node *pere) /* terminal */
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -527,7 +527,7 @@ int HTAB(int *p, const char *req, node *pere) /* terminal */
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -542,7 +542,7 @@ int VCHAR(int *p, const unsigned char *req, node *pere) /* terminal */
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -557,7 +557,7 @@ int range(int *p, const unsigned char *req, node *pere, int d, int f)
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -571,7 +571,7 @@ int num(int *p, const char *req, node *pere, int *v, int n)
             continue;
         }
         else {
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
             return false;
         }
     }
@@ -590,7 +590,7 @@ int case_insensitive_char(int *p, const char *req, node *pere, char c) /* termin
         return true;
     }
     else {
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         return false;
     }
 }
@@ -605,7 +605,7 @@ int case_insensitive_string(int *p, const char *req, node *pere, char *c) /* ter
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
             return false;
         }
     }
@@ -647,7 +647,7 @@ int quoted_string(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -683,7 +683,7 @@ int qdtext(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -713,6 +713,6 @@ int quoted_pair(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

@@ -26,7 +26,7 @@ int Content_Type_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -40,7 +40,7 @@ int Content_Type(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -80,7 +80,7 @@ int media_type(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -94,7 +94,7 @@ int type(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -108,7 +108,7 @@ int subtype(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -132,6 +132,6 @@ int parameter(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

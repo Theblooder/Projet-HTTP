@@ -27,7 +27,7 @@ int Accept_Encoding_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -48,7 +48,7 @@ int Accept_Encoding(int *p, const char *req, node *pere)
     }
     else {
         *p = save;
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         putValueInNode(save, *p-save, "Accept_Encoding", pere);
         return true;
     }
@@ -106,7 +106,7 @@ int codings(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -120,6 +120,6 @@ int content_coding(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

@@ -26,7 +26,7 @@ int Host_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -50,7 +50,7 @@ int Host(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -64,7 +64,7 @@ int uri_host(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -88,7 +88,7 @@ int host(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -116,7 +116,7 @@ int IP_literal(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -152,7 +152,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
         while(1) {
@@ -178,7 +178,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(!h16(p, req, fils = createFils(pere))) {
         purgeNode(fils);
@@ -207,7 +207,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -228,7 +228,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -256,7 +256,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -277,7 +277,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -305,7 +305,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -326,7 +326,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -340,7 +340,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -361,7 +361,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -371,7 +371,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -392,7 +392,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -402,7 +402,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(h16(p, req, createFils(pere))) {
         while(1) {
@@ -423,7 +423,7 @@ int IPv6address(int *p, const char *req, node *pere)
         }
         else {
             *p = save;
-            purgeFilsAndFrere(pere);
+            purgeFils(pere);
         }
     }
     if(case_insensitive_string(p, req, createFils(pere), "::")) {
@@ -432,7 +432,7 @@ int IPv6address(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -486,7 +486,7 @@ int IPvFuture(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -512,7 +512,7 @@ int IPv4address(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -529,7 +529,7 @@ int dec_octet(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
 
     if(case_insensitive_string(p, req, createFils(pere), "2")) {
         if(range(p, req, createFils(pere), 0x30, 0x34)) {
@@ -540,7 +540,7 @@ int dec_octet(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
 
     if(case_insensitive_string(p, req, createFils(pere), "1")) {
         if(DIGIT(p, req, createFils(pere))) {
@@ -551,7 +551,7 @@ int dec_octet(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
 
     if(range(p, req, createFils(pere), 0x31, 0x39)) {
         if(DIGIT(p, req, createFils(pere))) {
@@ -560,7 +560,7 @@ int dec_octet(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
 
     if(DIGIT(p, req, createFils(pere))) {
         putValueInNode(save, *p-save, "dec_octet", pere);
@@ -568,7 +568,7 @@ int dec_octet(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -594,7 +594,7 @@ int h16(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -611,7 +611,7 @@ int ls32(int *p, const char *req, node *pere)
         }
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
 
     if(IPv4address(p, req, createFils(pere))) {
         putValueInNode(save, *p-save, "ls32", pere);
@@ -619,7 +619,7 @@ int ls32(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -656,7 +656,7 @@ int reg_name(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "reg_name", pere);
     return true;
 }
@@ -683,7 +683,7 @@ int port(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     putValueInNode(save, *p-save, "port", pere);
     return true;
 }

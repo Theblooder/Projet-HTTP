@@ -27,7 +27,7 @@ int Accept_header(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -48,7 +48,7 @@ int Accept(int *p, const char *req, node *pere)
     }
     else {
         *p = save;
-        purgeFilsAndFrere(pere);
+        purgeFils(pere);
         putValueInNode(save, *p-save, "Accept", pere);
         return true;
     }
@@ -139,7 +139,7 @@ int media_range(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -167,7 +167,7 @@ int accept_params(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -189,7 +189,7 @@ int weight(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -227,7 +227,7 @@ int qvalue(int *p, const char *req, node *pere)
         return true;
     }
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     nbr = 0;
     if(case_insensitive_char(p, req, createFils(pere), '1')) {
         c = *p;
@@ -254,7 +254,7 @@ int qvalue(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -285,6 +285,6 @@ int accept_ext(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }

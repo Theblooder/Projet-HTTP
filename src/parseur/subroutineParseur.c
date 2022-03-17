@@ -18,6 +18,7 @@
 #include "headerAcceptLanguage.h"
 #include "headerUserAgent.h"
 #include "headerReferer.h"
+#include "headerAuthorization.h"
 
 
 #define true 1
@@ -56,7 +57,7 @@ int HTTP_message(int *p, const char *req, node *pere)
     }
     
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -118,6 +119,10 @@ int header_field(int *p, const char *req, node *pere)
         putValueInNode(save, *p-save, "header_field", pere);
         return true;
     }
+    else if(Authorization_header(p, req, fils)) {
+        putValueInNode(save, *p-save, "header_field", pere);
+        return true;
+    }
     else if(field_name(p, req, fils)) {
         if(case_insensitive_char(p, req, createFils(pere), ':')) {
             if(OWS(p, req, createFils(pere))) {
@@ -132,7 +137,7 @@ int header_field(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -146,7 +151,7 @@ int field_name(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -179,7 +184,7 @@ int field_value(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return true;
 }
 
@@ -224,7 +229,7 @@ int field_content(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -244,7 +249,7 @@ int field_vchar(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -279,7 +284,7 @@ int obs_fold(int *p, const char *req, node *pere)
     }
 
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return false;
 }
 
@@ -308,6 +313,6 @@ int message_body(int *p, const char *req, node *pere)
 
     putValueInNode(save, *p-save, "message_body", pere);
     *p = save;
-    purgeFilsAndFrere(pere);
+    purgeFils(pere);
     return true;
 }
