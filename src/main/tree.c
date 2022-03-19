@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include "tree.h"
 
+#include "color.h"
+#define C_LVL YEL
+#define C_TAG CYN
+#define C_STR GRN
+
 
 void printTree(node *root, int height, const char *req)
 {
@@ -22,7 +27,7 @@ void printTree(node *root, int height, const char *req)
         for(int i=0; i<height; i++) {
             printf("    ");
         }
-        printf("[%d:%s] = \"%s\"\n", height, root->tag, value);
+        printf("["C_LVL"%d"NC":"C_TAG"%s"NC"] = \""C_STR"%s"NC"\"\n", height, root->tag, value);
         //printf("[%d:%s] = \"%.*s\"\n", height, root->tag, root->length, &req[root->pStart]);
         height++;
     }
@@ -130,12 +135,6 @@ int purgeFils(node *pere)
     return 0;
 }
 
-/**
- * Remove a node
- * 
- * @param node 
- * @return int
- */
 int purgeNode(node *n)
 {
     purgeFils(n);

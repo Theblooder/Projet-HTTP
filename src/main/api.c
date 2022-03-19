@@ -53,6 +53,11 @@ _Token *searchTree(void *start, char *name)
 
 char *getElementTag(void *n, int *len)
 {
+    node *_node = n;
+
+    *len = strlen(_node->tag);
+
+    return &_node->tag[0];
 }
 
 char *getElementValue(void *n, int *len)
