@@ -13,6 +13,11 @@ Le programme s’exécute de la manière suivante
 
 Sans le [search] vous pourrez voir l’arbre des tokens.
 
+`script.bs 0 19999`
+Pour vérifié que tout les fichiers de test sont parser correctement
+
+27 sec pour l'éxécution complète
+
 # Information complémentaire
 
 Seuls les headers suivant sont présents
@@ -30,3 +35,8 @@ Seuls les headers suivant sont présents
 - Referer_header
 - Transfer_Encoding_header
 - User_Agent_header
+
+
+__Authors__
+
+GILGER Rémi, COURTEL Benoît, FATHI Ihab

@@ -3,18 +3,18 @@ for i in `seq $1 $2`
 do 
     ./httpparseur Only4G33ks/testFile/test$i.txt $3 > fi.cmp
 
-    ./profparser Only4G33ks/testFile/test$i.txt $3 > fi2.cmp
+    #./profparser Only4G33ks/testFile/test$i.txt $3 > fi2.cmp
 
     # cat /home/remi/Documents/fi.cmp > /dev/null
     # cat /home/remi/Documents/fi2.cmp > /dev/null
 
-    diff fi.cmp fi2.cmp
+    #diff fi.cmp fi2.cmp
 
-    if [ $? -ne 0 ]
+    if [ $? -ne 1 ]
     then
         echo test$i.txt;
     fi
-    
+
     rm fi.cmp
-    rm fi2.cmp
+    #rm fi2.cmp
 done

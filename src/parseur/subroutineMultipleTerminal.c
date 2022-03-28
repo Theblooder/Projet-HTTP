@@ -350,7 +350,7 @@ int OCTET(int *p, const unsigned char *req, node *pere)
 {
     int save = *p;
 
-    if(req[*p] && req[*p] >= 0x00 && req[*p] <= 0xFF) {
+    if(req[*p] >= 0x00 && req[*p] <= 0xFF) {
         *p += 1;
         putValueInNode(save, *p-save, "__octet", pere);
         return true;

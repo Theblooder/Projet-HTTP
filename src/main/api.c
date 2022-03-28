@@ -21,7 +21,7 @@ int parseur(char *req, int len)
     requ = req;
     root = createRoot();
     int length = 0;    
-    if(HTTP_message(&length, req, root)) {
+    if(HTTP_message(&length, req, root, len)) {
         return true;
     }
     else {

@@ -25,7 +25,7 @@
 #define false 0
 
 
-int HTTP_message(int *p, const char *req, node *pere)
+int HTTP_message(int *p, const char *req, node *pere, int len)
 {
     int save = *p;
     node *fils;
@@ -48,7 +48,7 @@ int HTTP_message(int *p, const char *req, node *pere)
         }
         if(nbr >= 0) {
             if(CRLF(p, req, createFils(pere))) {
-                if(message_body(p, req, createFils(pere))) {
+                if(message_body(p, req, createFils(pere), len)) {
                     putValueInNode(save, *p-save, "HTTP_message", pere);
                     return true;
                 }
@@ -288,31 +288,13 @@ int obs_fold(int *p, const char *req, node *pere)
     return false;
 }
 
-int message_body(int *p, const char *req, node *pere)
+int message_body(int *p, const char *req, node *pere, int len)
 {
     int save = *p;
-    node *fils;
-
-    int nbr = 0;
-    int c;
-    while(1) {
-        c = *p;
-
-        if(OCTET(p, req, fils = createFils(pere))) {
-            nbr++;
-            continue;
-        }
-        purgeNodeAndRightFrere(fils);
-        *p = c;
-        break;
+    
+    while(*p < len) {
+        OCTET(p, req, createFils(pere));
     }
-    if(nbr >= 1) {
-        putValueInNode(save, *p-save, "message_body", pere);
-        return true;
-    }
-
     putValueInNode(save, *p-save, "message_body", pere);
-    *p = save;
-    purgeFils(pere);
     return true;
 }
