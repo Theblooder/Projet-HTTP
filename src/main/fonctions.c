@@ -28,6 +28,7 @@ void _searchTree(node *root, char *name, _Token **l)
 
 void allocateNewToken(_Token **l, node *n)
 {
+    printf("salut\n\n\n");
     _Token *precedent = NULL;
     _Token *actuel = *l;
 

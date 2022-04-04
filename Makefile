@@ -17,11 +17,14 @@ TARGET = httpparseur
 # Decide whether the commands will be shwon or not
 VERBOSE = TRUE
 # Create the list of directories
-DIRS = main parseur
+DIRS = main parseur semantique
 SOURCEDIRS = $(foreach dir, $(DIRS), $(addprefix $(SOURCEDIR)/, $(dir)))
 TARGETDIRS = $(foreach dir, $(DIRS), $(addprefix $(BUILDDIR)/, $(dir)))
 # Generate the GCC includes parameters by adding -I before each source folder
-INCLUDES = $(foreach dir, $(SOURCEDIRS), $(addprefix -I, $(dir)))
+LIBSDIR = librequest-0.5/api   #add the folder to the .h (api)
+INCLUDES = $(foreach dir, $(SOURCEDIRS), $(addprefix -I , $(dir)))
+INCLUDES += $(foreach dir, $(LIBSDIR), $(addprefix -I lib/, $(dir)))
+LFLAGS = -L lib/librequest-0.5 -Wl,-rpath=lib/librequest-0.5 -lrequest
 # Add this list to VPATH, the place make will look for the source files
 VPATH = $(SOURCEDIRS)
 # Create a list of *.c sources in DIRS
@@ -30,6 +33,7 @@ SOURCES = $(foreach dir,$(SOURCEDIRS),$(wildcard $(dir)/*.c))
 OBJS := $(subst $(SOURCEDIR),$(BUILDDIR),$(SOURCES:.c=.o))
 # Define dependencies files for all objects
 DEPS = $(OBJS:.o=.d)
+DEPS += main.d
 # Name the compiler
 CC = gcc -g
 # OS specific part
@@ -67,7 +71,7 @@ all: directories $(TARGET)
 
 $(TARGET): $(OBJS)
 	@echo Linking $@
-	$(HIDE)$(CC) $(OBJS) -o $(TARGET)
+	$(HIDE)$(CC) $(OBJS) $(LFLAGS) -o $(TARGET)
 
 # Include dependencies
 -include $(DEPS)

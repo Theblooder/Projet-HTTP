@@ -1,0 +1,32 @@
+On accepte que des request line ! (unknown or invalid request method)
+
+===== method =====
+    GET / POST / PUT / HEAD / DELETE / CONNECT / OPTIONS / TRACE (sinon 501 Not Implmented) (GET et HEAD obligatoire)
+    (si on connais mais client n'a pas le droit 405 (Method Not Allowed))
+    (GET, HEAD, OPTIONS, TRACE are safe mathods) (PUT, DELETE et safe mathods are idempotent (on peut les faire plusieurs fois c'est pareil))
+
+
+    Si GET :
+        - pas de message body (400 Bad Resquest)
+
+    Si HEAD :
+        - pas de message body (400 Bad Resquest)
+
+    Si POST :
+        - vérifier que le payload vérifie bien le type de donnée envoyer voulu (A FAIRE POUR LE SPRINT 4)
+
+    Si CONNECT :
+        - request-target doit être un authority form
+        - pas de message body (400 Bad Resquest)
+    
+
+==== resquest-target =====
+
+
+
+
+
+
+
+
+
