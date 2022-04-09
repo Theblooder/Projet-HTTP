@@ -21,6 +21,24 @@ On accepte que des request line ! (unknown or invalid request method)
     
 
 ==== resquest-target =====
+    -If the port is equal to the default port for a scheme, the normal form is to omit the port subcomponent.
+    
+==== Transfer-Encoding-header =====
+    - transfer-coding    = "chunked" ; Section 4.1
+                        / "compress" ; Section 4.2.1
+                        / "deflate" ; Section 4.2.2
+                        / "gzip" ; Section 4.2.3
+                        / transfer-extension   //verifié dans l'analyse syntaxique
+                        
+    - All transfer-coding names are case-insensitive and ought to be registered within the HTTP Transfer Coding registry
+    - A recipient MUST ignore unrecognized chunk extensions.
+    - A server ought to limit the total length of chunk extensions received in a request to an amount reasonable for the services provided, generate an appropriate       4xx (Client Error) response if that amount is exceeded.
+    - A sender MUST NOT generate a trailer that contains a field necessary for message framing. 
+    - When a chunked message containing a non-empty trailer is received, the recipient MAY process the fields (aside from those forbidden above) as if they were           appended to the message's header section.
+    - A recipient MUST ignore (or consider as an error) any fields that are forbidden to be sent in a trailer.
+    - a server SHOULD NOT generate trailer fields that it believes are necessary for the user agent to receive.
+    - A recipient SHOULD consider "x-compress" to be equivalent to "compress".
+    - 
 
 
 
