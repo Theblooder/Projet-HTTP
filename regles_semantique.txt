@@ -38,7 +38,71 @@ On accepte que des request line ! (unknown or invalid request method)
     - A recipient MUST ignore (or consider as an error) any fields that are forbidden to be sent in a trailer.
     - a server SHOULD NOT generate trailer fields that it believes are necessary for the user agent to receive.
     - A recipient SHOULD consider "x-compress" to be equivalent to "compress".
-    - 
+    - When the user agent generates an HTTP request, the user agent MUST NOT attach more than one Cookie header field.
+    - If the user agent does attach a Cookie header field to an HTTP request, the user agent MUST send the cookie-string (defined below) as the value of the header       field.
+    - The user agent MUST use an algorithm equivalent to the following
+      algorithm to compute the "cookie-string" from a cookie store and a
+      request-uri:
+
+      1.  Let cookie-list be the set of cookies from the cookie store that
+          meets all of the following requirements:
+
+       *  Either:
+
+             The cookie's host-only-flag is true and the canonicalized
+             request-host is identical to the cookie's domain.
+
+          Or:
+
+             The cookie's host-only-flag is false and the canonicalized
+             request-host domain-matches the cookie's domain.
+
+       *  The request-uri's path path-matches the cookie's path.
+
+       *  If the cookie's secure-only-flag is true, then the request-
+          uri's scheme must denote a "secure" protocol (as defined by
+          the user agent).
+       *  If the cookie's http-only-flag is true, then exclude the
+          cookie if the cookie-string is being generated for a "non-
+          HTTP" API (as defined by the user agent).
+     2.  The user agent SHOULD sort the cookie-list in the following
+       order:
+
+       *  Cookies with longer paths are listed before cookies with
+          shorter paths.
+
+       *  Among cookies that have equal-length path fields, cookies with
+          earlier creation-times are listed before cookies with later
+          creation-times.
+   3.  Update the last-access-time of each cookie in the cookie-list to
+       the current date and time.
+
+   4.  Serialize the cookie-list into a cookie-string by processing each
+       cookie in the cookie-list in order:
+
+       1.  Output the cookie's name, the %x3D ("=") character, and the
+           cookie's value.
+
+       2.  If there is an unprocessed cookie in the cookie-list, output
+           the characters %x3B and %x20 ("; ").
+      
+ ==== Referer-header ====
+    - A user agent MUST NOT include the fragment and userinfo components of the URI reference
+    - If the target URI was obtained from a source that does not have its own URI, the user agent MUST either exclude the
+   Referer field or send it with a value of "about:blank".
+    - An intermediary SHOULD NOT modify or delete the Referer header field when the field value shares the same scheme and host as the request target.
+
+==== User-Agent =====
+    - A user agent SHOULD NOT generate a User-Agent field containing needlessly fine-grained detail and SHOULD limit the addition of subproducts by third parties.
+
+==== Accept-header ====
+    - A request without any Accept header field implies that the user agent will accept any media type in response.
+    - If the header field is present in a request and none of the available representations for the response have a media type that is listed as acceptable, the           origin server can either honor the header field by sending a 406 (Not Acceptable) response or disregard the header field by treating the response as if it is       not subject to content negotiation.
+
+==== Accept-Encoding-header ====
+    - If an Accept-Encoding header field is present in a request and none of the available representations for the response have a content-coding that is listed as       acceptable, the origin server SHOULD send a response without any content-coding.
+    
+    
 
 
 
