@@ -17,7 +17,7 @@ int Content_Length_Header(int *p, const char *req, node *pere)
             if(OWS(p, req, createFils(pere))) {
                 if(Content_Length(p, req, createFils(pere))) {
                     if(OWS(p, req, createFils(pere))) {
-                        putValueInNode(save, *p-save, "Content_Length_Header", pere);
+                        putValueInNode(save, *p-save, "Content_Length_header", pere);
                         return true;
                     }
                 }

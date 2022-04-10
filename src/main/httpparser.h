@@ -7,7 +7,7 @@
 // 		struct node *link;
 // 		} Lnode ;
 
-typedef struct node {
+typedef struct Lnode {
 	int pStart;     // start of the token
 	int length;     // length of the token
 	char tag[32];   // tag of the token

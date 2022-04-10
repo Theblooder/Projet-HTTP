@@ -22,11 +22,17 @@ On accepte que des request line ! (unknown or invalid request method)
 
 ==== resquest-target =====
 
+rfc3986 faire une fonction qui réécrit correctement le path
+
+Si request-target est trop grand (414 URI Too Long) (faire au moins 8000 octets)
+
+=== HTTP-version ===
+
+si plus grand que 1.9 car 1.8 est traité comme du 1.1 (505 HTTP Version Not Supported)
+
+si plus grand que 1.1 alors un champ HOST est obligatoire (400 Bad Request)
 
 
+libmagick
 
-
-
-
-
-
+conent-length et content-type
