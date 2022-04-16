@@ -11,7 +11,7 @@
 #include <unistd.h>
 
 // for librequest 
-#include "request.h"   
+#include "request.h"
 
 // for parser 
 
@@ -20,14 +20,17 @@
 
 #include "tree.h"
 #include "verifSemantique.h"
+#include "constructAnswer.h"
 
 #define ERROR "HTTP/1.0 400 SUCKA\r\n\r\n"
-#define REPONSE "HTTP/1.0 200 OK\r\nContent-type: text/html\r\nContent-length: 200\r\n\r\n"
+#define REPONSE "HTTP/1.0 200 OK\r\n"
 
 int main(int argc, char *argv[])
 {
 	message *requete; 
 	int res; 
+	int a = 0;
+	int file;
 	while ( 1 ) {
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest. 
 		if ((requete=getRequest(8080)) == NULL ) return -1; 
@@ -35,18 +38,25 @@ int main(int argc, char *argv[])
 		// Affichage de debug 
 		printf("#########################################\nDemande recue depuis le client %d\n",requete->clientId); 
 		printf("Client [%d] [%s:%d]\n",requete->clientId,inet_ntoa(requete->clientAddress->sin_addr),htons(requete->clientAddress->sin_port));
-		printf("Contenu de la demande %.*s\n\n",requete->len,requete->buf);  
+		printf("Contenu de la demande %.*s\n\n",requete->len,requete->buf);
+
+
 		if (res=parseur(requete->buf,requete->len)) {
-			/* Vérification de la sémantique */
+
+			initAnswer(requete->clientId);
+
+			constructFirstLine("1.0", 200, "OK");
+			// writeDirectClient(requete->clientId, REPONSE, strlen(REPONSE));
+			// /* Vérification de la sémantique */
 
 
 			_Token *r,*tok;
 			node *n, *root;
 			
-			// get the root of the tree this is no longer opaque since we know the internal type with httpparser.h 
-			//void *root;
+			// // get the root of the tree this is no longer opaque since we know the internal type with httpparser.h 
+			// //void *root;
 			root = getRootTree();
-			r = searchTree(root,"request_line"); 
+			r = searchTree(root, "request_line"); 
 			tok = searchTree(r->node, "absolute_path");
 			purgeElement(&r);
 
@@ -56,31 +66,43 @@ int main(int argc, char *argv[])
 
 			char *filePath;
 			filePath = constructAbsolutePath(&requete->buf[n->pStart], n->length, filePath);
-			construct
+
+			
+			constructContentTypeHeader(filePath);
+
 			purgeTree(root);
 
 
-			int file = open(filePath, O_RDONLY);
+			
+			
+			
+			
+			file = open(filePath, O_RDONLY);
 			if(file == -1) {
-				writeDirectClient(requete->clientId,ERROR,strlen(ERROR)); 
+				constructFirstLine("1.0", 404, "Not Found");
 			}
 			else {
 				struct stat st;
 
 				fstat(file, &st);
 				char *addr = mmap(NULL, st.st_size, PROT_WRITE, MAP_PRIVATE, file, 0);
-				//writeDirectClient(requete->clientId, copyFile, l + 6);
-				writeDirectClient(requete->clientId,REPONSE,strlen(REPONSE)); 
-				writeDirectClient(requete->clientId, addr, st.st_size);
 
+				constructMessageBody(addr, st.st_size, 0);
+				close(file);
 			}
 			free(filePath);
 			
 		} else {
-			writeDirectClient(requete->clientId,ERROR,strlen(ERROR)); 
+			// writeDirectClient(requete->clientId,ERROR,strlen(ERROR)); 
 		}
 
-		endWriteDirectClient(requete->clientId); 
+
+		// endWriteDirectClient(requete->clientId); 
+
+		/* new function who send  the answer in once thanks to he structure Answer contructed before */
+		sendAnswerToClient();
+		purgeAnswer();
+
 		requestShutdownSocket(requete->clientId); 
 
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer... 

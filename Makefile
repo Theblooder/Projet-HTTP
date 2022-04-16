@@ -21,10 +21,10 @@ DIRS = main parseur semantique
 SOURCEDIRS = $(foreach dir, $(DIRS), $(addprefix $(SOURCEDIR)/, $(dir)))
 TARGETDIRS = $(foreach dir, $(DIRS), $(addprefix $(BUILDDIR)/, $(dir)))
 # Generate the GCC includes parameters by adding -I before each source folder
-LIBSDIR = librequest-0.5/api   #add the folder to the .h (api)
+LIBSDIR = librequest-0.5/api  libmagic #add the folder to the .h (api)
 INCLUDES = $(foreach dir, $(SOURCEDIRS), $(addprefix -I , $(dir)))
 INCLUDES += $(foreach dir, $(LIBSDIR), $(addprefix -I lib/, $(dir)))
-LFLAGS = -L lib/librequest-0.5 -Wl,-rpath=lib/librequest-0.5 -lrequest
+LFLAGS = -L lib/librequest-0.5 -L lib/libmagic -Wl,-rpath=lib/librequest-0.5:lib/libmagic -lrequest -lmagic
 # Add this list to VPATH, the place make will look for the source files
 VPATH = $(SOURCEDIRS)
 # Create a list of *.c sources in DIRS

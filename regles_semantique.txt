@@ -153,7 +153,7 @@ On accepte que des request line ! (unknown or invalid request method)
        forward the received Host field-value.
     - A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that           contains more than one Host header field or a Host header field with an invalid field-value.
     
-    ==== Connection header ====
+==== Connection header ====
     - In order to avoid confusing downstream recipients, a proxy or gateway MUST remove or replace any received connection options before forwarding the message.
     - When a header field aside from Connection is used to supply control information for or about the current connection, the sender MUST list the corresponding         field-name within the Connection header field.
     - A proxy or gateway MUST parse a received Connection header field before a message is forwarded and, for each connection-option in this field, remove any             header field(s) from the message with the same name as the connection-option, and then remove the Connection header field itself (or replace it with the             intermediary's own connection options for the forwarded message).
@@ -239,3 +239,15 @@ si plus grand que 1.1 alors un champ HOST est obligatoire (400 Bad Request)
 libmagick
 
 conent-length et content-type
+
+
+
+
+
+
+
+
+
+
+
+
