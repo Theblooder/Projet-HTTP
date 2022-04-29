@@ -19,6 +19,7 @@
 static int method;
 static File *f;
 static message *requete;
+static node *treeRoot;
 
 /**
  * @brief To verify the semantique
@@ -59,6 +60,7 @@ int constructAnswer(node *root, message *req, char *reason)
     /* Mettre des define pour la method dans verificationSemantique() + vérifier que si version 1.1 alors doit avoir host header*/
     f = malloc(sizeof(File));
     requete = req;
+    treeRoot = root;
 
 
     _Token *r,*tok;
