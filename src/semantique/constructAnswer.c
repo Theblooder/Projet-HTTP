@@ -127,7 +127,6 @@ int constructHeader(char *header, int len)
     for(int i=0; i<len; i++) {
         h->buf[i] = header[i];
     }
-
     return 0;
 }
 

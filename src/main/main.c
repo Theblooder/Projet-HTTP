@@ -5,9 +5,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
 #include <unistd.h>
 
 // for librequest 
@@ -22,15 +19,10 @@
 #include "verifSemantique.h"
 #include "constructAnswer.h"
 
-#define ERROR "HTTP/1.0 400 SUCKA\r\n\r\n"
-#define REPONSE "HTTP/1.0 200 OK\r\n"
-
 int main(int argc, char *argv[])
 {
 	message *requete; 
-	int res; 
-	int a = 0;
-	int file;
+	int res;
 	while ( 1 ) {
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest. 
 		if ((requete=getRequest(8080)) == NULL ) return -1; 
@@ -42,55 +34,26 @@ int main(int argc, char *argv[])
 
 
 		if (res=parseur(requete->buf,requete->len)) {
-
+			
 			initAnswer(requete->clientId);
 
-			constructFirstLine("1.0", 200, "OK");
-			// writeDirectClient(requete->clientId, REPONSE, strlen(REPONSE));
-			// /* Vérification de la sémantique */
+			node *root = getRootTree();
+			char reasonPrase[32]; int codeError;
+			if(codeError = verificationSemantique(root, requete, reasonPrase)) {
+				constructFirstLine("1.0", codeError, reasonPrase);
+			}
 
-
-			_Token *r,*tok;
-			node *n, *root;
-			
-			// // get the root of the tree this is no longer opaque since we know the internal type with httpparser.h 
-			// //void *root;
-			root = getRootTree();
-			r = searchTree(root, "request_line"); 
-			tok = searchTree(r->node, "absolute_path");
-			purgeElement(&r);
-
-			// node is no longer opaque 
-			n = tok->node;
-			purgeElement(&tok);
-
-			char *filePath;
-			filePath = constructAbsolutePath(&requete->buf[n->pStart], n->length, filePath);
-
-			
-			constructContentTypeHeader(filePath);
+			if(codeError = constructAnswer(root, requete, reasonPrase)) {
+				constructFirstLine("1.0", codeError, reasonPrase);
+			}
+			else {
+				constructFirstLine("1.1", 200, "OK");
+			}
 
 			purgeTree(root);
 
 
-			
-			
-			
-			
-			file = open(filePath, O_RDONLY);
-			if(file == -1) {
-				constructFirstLine("1.0", 404, "Not Found");
-			}
-			else {
-				struct stat st;
 
-				fstat(file, &st);
-				char *addr = mmap(NULL, st.st_size, PROT_WRITE, MAP_PRIVATE, file, 0);
-
-				constructMessageBody(addr, st.st_size, 0);
-				close(file);
-			}
-			free(filePath);
 			
 		} else {
 			// writeDirectClient(requete->clientId,ERROR,strlen(ERROR)); 
