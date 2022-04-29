@@ -10,11 +10,15 @@ typedef struct file {
     char *addr;
 } File;
 
-int verificationSemantique(node *root, message *requete, char *reason);
-int constructAnswer(node *root, message *requete, char *reason);
-int constructAbsolutePath(const char *absolutePath, int len, File *f);
-int cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest);
-int constructContentTypeHeader(File *f);
-int constructContentLengthHeader(File *f);
+#define GET 100
+#define HEAD 101
+#define POST 102
+
+int verificationSemantique(node *root, message *req, char *reason);
+int constructAnswer(node *root, message *req, char *reason);
+int constructAbsolutePath(const char *absolutePath, int len);
+char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest);
+int constructContentTypeHeader();
+int constructContentLengthHeader();
 
 #endif
