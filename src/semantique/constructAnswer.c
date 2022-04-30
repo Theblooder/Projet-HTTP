@@ -58,7 +58,7 @@ void purgeAnswer()
 
 int sendAnswerToClient()
 {
-    writeDirectClient(AnswerToClient->clientID, AnswerToClient->bufSL, AnswerToClient->lenSL);
+        writeDirectClient(AnswerToClient->clientID, AnswerToClient->bufSL, AnswerToClient->lenSL);
     printf("%.*s", AnswerToClient->lenSL, AnswerToClient->bufSL);
 
     Header *h = AnswerToClient->headers;

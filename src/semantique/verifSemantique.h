@@ -13,10 +13,12 @@ typedef struct file {
 #define GET 100
 #define HEAD 101
 #define POST 102
+#define MAX_REASON_PHRASE 32
 
-int verificationSemantique(node *root, message *req, char *reason);
+int verificationSemantique(char *reason);
 int constructAnswer(node *root, message *req, char *reason);
-int constructAbsolutePath(const char *absolutePath, int len);
+int needToCloseConnection();
+int constructAbsolutePath();
 char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest);
 int constructContentTypeHeader();
 int constructContentLengthHeader();

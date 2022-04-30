@@ -13,6 +13,7 @@
 #include "tree.h"
 #include "verifSemantique.h"
 #include "constructAnswer.h"
+#include "serverConf.h"
 
 #include "magic.h"
 
@@ -20,6 +21,7 @@ static int method;
 static File *f;
 static message *requete;
 static node *treeRoot;
+static int version;
 
 /**
  * @brief To verify the semantique
@@ -28,23 +30,23 @@ static node *treeRoot;
  * @param reason if there is an error we say here the reason
  * @return int the number of the error, 0 if None
  */
-int verificationSemantique(node *root, message *req, char *reason)
+int verificationSemantique(char *reason)
 {
     /* To verify that the method is one we use */
     _Token *t;
     node * nodeMethod;
 
-    t = searchTree(root, "method");
+    t = searchTree(treeRoot, "method");
     nodeMethod = t->node; purgeElement(&t);
-    char *charMethod = &req->buf[nodeMethod->pStart];
+    char *charMethod = &requete->buf[nodeMethod->pStart];
 
-    if(!strncmp(charMethod, "GET", 3)) {
+    if(!strncmp(charMethod, "GET", nodeMethod->length)) {
         method = GET;
     }
-    else if(!strncmp(charMethod, "HEAD", 4)) {
+    else if(!strncmp(charMethod, "HEAD", nodeMethod->length)) {
         method = HEAD;
     }
-    else if(!strncmp(charMethod, "POST", 4)) {
+    else if(!strncmp(charMethod, "POST", nodeMethod->length)) {
         method = POST;
     }
     else {
@@ -52,6 +54,32 @@ int verificationSemantique(node *root, message *req, char *reason)
         return 501;
     }
 
+    /* Verification of the version number + need to have host header if >= 1.1 */
+
+    _Token *t1,*t2;
+    node *versionMajorNode, *versionMinorNode;
+
+    t1 = searchTree(treeRoot, "HTTP_version");
+    t2 = searchTree(t1->node, "__digit"); purgeElement(&t1);
+    versionMajorNode = t2->node; versionMinorNode = t2->next->node; purgeElement(&t2);
+
+    version = (requete->buf[versionMajorNode->pStart] - 48) * 10 + (requete->buf[versionMajorNode->pStart] - 48);
+
+    if(version >= 20) {
+        strcpy(reason, "HTTP Version Not Supported");
+        return 505;
+    }
+    if(version >= 11) {
+        _Token *t3;
+
+        t3 = searchTree(treeRoot, "Host_header");
+        if(t3 == NULL) {
+            strcpy(reason, "Bad Request");
+            return 400;
+        }
+        purgeElement(&t3);
+        
+    }
     return 0;
 }
 
@@ -62,27 +90,35 @@ int constructAnswer(node *root, message *req, char *reason)
     requete = req;
     treeRoot = root;
 
+    char reasonPrase[MAX_REASON_PHRASE];
+    int error;
+    if((error = verificationSemantique(reasonPrase)) != 0) {
+        strcpy(reason, reasonPrase);
+        free(f);
+        return 404;
+    }
 
-    _Token *r,*tok;
-    node *absolute_path;
     
-    int file;
-
-    r = searchTree(root, "request_line");
-    tok = searchTree(r->node, "absolute_path"); purgeElement(&r);
-    absolute_path = tok->node; purgeElement(&tok);
 
     /*Si GET ou HEAD alors on fait tout ca*/
     if(method == GET | method == HEAD) {
-        constructAbsolutePath(&requete->buf[absolute_path->pStart], absolute_path->length);
+        constructAbsolutePath();
 
-
-        if(constructContentTypeHeader() == -1) {
+        int res1 = constructContentTypeHeader();
+        if(res1 == -1) {
             strcpy(reason, "Not Found");
             free(f->filePath);
             free(f);
             return 404;
         }
+        else if(res1 == -2) {
+            strcpy(reason, "Error LibMagic");
+            free(f->filePath);
+            free(f);
+            return 500;
+        }
+
+        int file;
         file = open(f->filePath, O_RDONLY);
 
         fstat(file, &f->st);
@@ -104,6 +140,36 @@ int constructAnswer(node *root, message *req, char *reason)
     free(f);
 
     return 0;
+}
+
+int needToCloseConnection()
+{
+    if(version <= 10) {
+        return 1;
+    }
+    else {
+        _Token *t1, *t;
+        node *n;
+
+        t1 = searchTree(treeRoot, "connection_option");
+        t = t1;
+        while(t != NULL) {
+            n = t->node;
+            if(!strncasecmp(&requete->buf[n->pStart], "close", 5)) {
+                purgeElement(&t1);
+                return 1;
+            }
+            if(!strncasecmp(&requete->buf[n->pStart], "keep-alive", 10)) {
+                purgeElement(&t1);
+                return 0;
+            }
+            t = t->next;
+        }
+
+
+        if(t1 != NULL); purgeElement(&t1);
+        return 0;
+    }
 }
 
 
@@ -141,24 +207,41 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
  * @param destPath
  * @return int 0 if ok -1 if error (ne need now to verify it)
  */
-int constructAbsolutePath(const char *absolutePath, int len)
+int constructAbsolutePath()
 {
-    char *filesPath = "htdocs";
+    _Token *t1,*t2;
+    node *absolute_path;
+
+    t1 = searchTree(treeRoot, "request_line");
+    t2 = searchTree(t1->node, "absolute_path"); purgeElement(&t1);
+    absolute_path = t2->node; purgeElement(&t2);
 
     char *cleanPath;
-    cleanPath = cleanResquestTarget(absolutePath, len, cleanPath);
+    cleanPath = cleanResquestTarget(&requete->buf[absolute_path->pStart], absolute_path->length, cleanPath);
     int l = strlen(cleanPath);
 
-    f->filePath = malloc((l + 6 + 1) * sizeof(char));
+    _Token *t3, *t4;
+    node *host;
+
+    t3 = searchTree(treeRoot, "Host");
+    t4 = searchTree(t3->node, "host"); purgeElement(&t3);
+    host = t4->node; purgeElement(&t4);
+
+    char filesPath[MAX_LENGTH_SITE];
+    getRepertoryFromHost(filesPath, &requete->buf[host->pStart], host->length);
+   
+
+
+    f->filePath = malloc((l + strlen(filesPath) + 1) * sizeof(char));
     char *copyDestPath = f->filePath;
 
 
 
     strcpy(copyDestPath, filesPath);
-    copyDestPath += 6;
+    copyDestPath += strlen(filesPath);
 
     int i = 0;
-    while(i < len) {
+    while(i < l) {
         *copyDestPath++ = *(cleanPath + i);
         i++;
     }

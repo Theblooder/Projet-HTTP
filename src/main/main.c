@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
 {
 	message *requete;
 	int res;
+	node *root;
 	while ( 1 ) {
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest.
 		if ((requete=getRequest(8080)) == NULL ) return -1;
@@ -37,11 +38,8 @@ int main(int argc, char *argv[])
 
 			initAnswer(requete->clientId);
 
-			node *root = getRootTree();
-			char reasonPrase[32]; int codeError;
-			if(codeError = verificationSemantique(root, requete, reasonPrase)) {
-				constructFirstLine("1.0", codeError, reasonPrase);
-			}
+			root = getRootTree();
+			char reasonPrase[MAX_REASON_PHRASE]; int codeError;
 
 			if(codeError = constructAnswer(root, requete, reasonPrase)) {
 				constructFirstLine("1.0", codeError, reasonPrase);
@@ -51,7 +49,7 @@ int main(int argc, char *argv[])
 				/* faire une fonction qui écrit le host-header en fonction du multi-site */
 			}
 
-			purgeTree(root);
+			
 
 
 
@@ -66,10 +64,13 @@ int main(int argc, char *argv[])
 		purgeAnswer();
 
 		/* Faire une fonction qui dit oui ou non si la connection doit s'arréter (oui si 1.1 et connection keep-alive, non si connection close)*/
-		requestShutdownSocket(requete->clientId);
+		if(needToCloseConnection()) {
+			requestShutdownSocket(requete->clientId);
+		}
 
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
 		freeRequest(requete);
+		purgeTree(root);
 	}
 
 	return 1;
