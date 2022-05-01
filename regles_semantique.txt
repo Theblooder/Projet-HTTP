@@ -1,3 +1,16 @@
+!!! Ce fichier contient de nombreux copier coller des RFC des endroits imortants à prendre en compte                                       !!!
+!!!                                                                                                                                        !!!
+!!! Ce fichier n'est pas utile d'être lu, mieux vaut regarder les différents README.md qui expliquent très bien toutes les implémentations !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
 On accepte que des request line ! (unknown or invalid request method)
 
 ===== method =====

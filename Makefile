@@ -1,11 +1,12 @@
 TAR = Projet-HTTP-save
 IGNORE1 = .vscode
-IGNORE2 = get1
+IGNORE2 = Only4G33ks
 IGNORE3 = httpparseur
 IGNORE4 = .git
 IGNORE5 = .gitignore
 IGNORE6 = LICENSE
 IGNORE7 = profparser
+IGNORE8 = script.bs
 
 
 
@@ -92,4 +93,4 @@ tar: clean
 	dir=$$(basename $$PWD) && echo "compressing $(dir)" && cd .. && \
 	tar cvfz "$(TAR).tgz" \
 	--transform="s,^$$dir,$(TAR)," \
-	--exclude="$(IGNORE1)" --exclude="$(IGNORE2)" --exclude="$(IGNORE3)" --exclude="$(IGNORE4)" --exclude="$(IGNORE5)" --exclude="$(IGNORE6)" --exclude="$(IGNORE7)" "$$dir" --verbose --show-transformed-names
+	--exclude="$(IGNORE1)" --exclude="$(IGNORE2)" --exclude="$(IGNORE3)" --exclude="$(IGNORE4)" --exclude="$(IGNORE5)" --exclude="$(IGNORE6)" --exclude="$(IGNORE7)" --exclude="$(IGNORE8)" "$$dir" --verbose --show-transformed-names

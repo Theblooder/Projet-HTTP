@@ -23,13 +23,7 @@ static message *requete;
 static node *treeRoot;
 static int version;
 
-/**
- * @brief To verify the semantique
- *
- * @param root root of the tree
- * @param reason if there is an error we say here the reason
- * @return int the number of the error, 0 if None
- */
+
 int verificationSemantique(char *reason)
 {
     /* Verification of the version number + need to have host header if >= 1.1 */
@@ -176,15 +170,6 @@ int needToCloseConnection()
     }
 }
 
-
-/**
- * @brief To clean the request_target with percent_encoding and ".." path
- *
- * @param dirtyRequest
- * @param len len of the request
- * @param cleanRequest
- * @return int len of the
- */
 char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
 {
     cleanRequest = malloc((len + 1) * sizeof(char)); /* the +1 is for the '\0' at the end */
@@ -203,14 +188,6 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
     return cleanRequest;
 }
 
-/**
- * @brief Give the path to open a file (end with \0 caracter)
- *
- * @param absolutePath
- * @param len len of the absolute path
- * @param destPath
- * @return int 0 if ok -1 if error (ne need now to verify it)
- */
 int constructAbsolutePath()
 {
     _Token *t1,*t2;
@@ -261,12 +238,6 @@ int constructAbsolutePath()
     return 0;
 }
 
-/**
- * @brief search the type of the documents with the libmagic
- *
- * @param absPath
- * @return int content_type header to add (-1 if file not find, -2 if libmagic didn't work)
- */
 int constructContentTypeHeader()
 {
     const char *mime;
