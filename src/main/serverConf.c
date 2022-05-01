@@ -24,7 +24,7 @@ void getRepertoryFromHost(char *repository, const char *host, int len)
             i++;
         }
         int end = i;
-        while(line[end] != '\n') {
+        while(line[end] != '\n' && line[end] != '\0') {
             end++;
         }
         int min;

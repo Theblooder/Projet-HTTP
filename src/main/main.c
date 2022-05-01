@@ -16,8 +16,11 @@
 #include "api.h"
 
 #include "tree.h"
-#include "verifSemantique.h"
 #include "constructAnswer.h"
+#include "Answer.h"
+
+/* Si la requete est mal parser */
+#define ERROR "HTTP/1.1 400 Bad Request\r\n\r\nRequete fausse syntaxiquement (le parseur retourne faux)"
 
 int main(int argc, char *argv[])
 {
@@ -39,29 +42,45 @@ int main(int argc, char *argv[])
 			initAnswer(requete->clientId);
 
 			root = getRootTree();
-			char reasonPrase[MAX_REASON_PHRASE]; int codeError;
 
-			if(codeError = constructAnswer(root, requete, reasonPrase)) {
-				constructFirstLine("1.0", codeError, reasonPrase);
+			char reasonPrase[MAX_REASON_PHRASE]; int code; int version;
+			code = constructAnswer(root, requete, reasonPrase, &version);
+
+			/* ===== To construct the version we will answer ======*/
+			char v[4];
+			int minor = version % 10;
+			int major = (version - minor) / 10;
+			if(version >= 11) {
+				sprintf(v, "%d.%d", 1, 1); v[3] = '\0';
 			}
 			else {
-				constructFirstLine("1.1", 200, "OK");
-				/* faire une fonction qui écrit le host-header en fonction du multi-site */
+				sprintf(v, "%d.%d", major, minor); v[3] = '\0';
 			}
+			/*=======================================================*/
 
+			constructFirstLine(v, code, reasonPrase);
+
+			if(code != 200) {
+				purgeHeaders();
+			}
+			else {
+				/* If the reponse is OK we add all of the headers belows */
+				constructHostHeader();
+			}
 			
+
+			/* new function who send the answer in once thanks to he structure Answer contructed before */
+			sendAnswerToClient();
+			purgeAnswer();
 
 
 
 
 		} else {
-			// writeDirectClient(requete->clientId,ERROR,strlen(ERROR));
+			writeDirectClient(requete->clientId,ERROR,strlen(ERROR));
+			endWriteDirectClient(requete->clientId);
 		}
-
-
-		/* new function who send  the answer in once thanks to he structure Answer contructed before */
-		sendAnswerToClient();
-		purgeAnswer();
+		
 
 		/* Faire une fonction qui dit oui ou non si la connection doit s'arréter (oui si 1.1 et connection keep-alive, non si connection close)*/
 		if(needToCloseConnection()) {

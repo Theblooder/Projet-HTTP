@@ -1,73 +1,38 @@
-#ifndef __CONSTRUCTANSWER_H__
-#define __CONSTRUCTANSWER_H__
+#ifndef __VERIFSEMANTIQUE_H__
+#define __VERIFSEMANTIQUE_H__
 
 /*Prototype*/
 
-typedef struct answer {
-    int clientID;
-    int lenSL; 
-    char *bufSL;
-    struct header *headers;
-    int lenMB;
-    char *bufMB;
-    int isMBallocate;
-} Answer;
-
-typedef struct header {
-    int len;
-    char *buf;
-    struct header *next;
-} Header;
-
-/* !! La fonction qui nettoit la réponse doit aussi free tout les buf qui ont été crée car chaque buf va correspondre à une allocation de mémoire */
-
 /**
- * @brief To allocate the answer
+ * @brief To store all the information about a file
  * 
  */
-void initAnswer(int clientID);
+typedef struct file {
+    char *filePath;   /* The path of the file */
+    char type[64];    /* type MIME */
+    struct stat st;   /* stats thanks to stat() */
+    char *addr;       /* The address thanks to nmap() */
+} File;
+
+#define GET 100
+#define HEAD 101
+#define POST 102
+
+#define MAX_REASON_PHRASE 32
+
+int verificationSemantique(char *reason);
+int constructAnswer(node *root, message *req, char *reason, int *versionHTTP);
+int needToCloseConnection();
+int constructAbsolutePath();
+char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest);
+int constructContentTypeHeader();
+int constructContentLengthHeader();
 
 /**
- * @brief Purge the answer (and all the bufs allocate)
+ * @brief if there is no host, none will be added
  * 
+ * @return int -1 if no host
  */
-void purgeAnswer();
-
-/**
- * @brief Construct the answer to send it
- * 
- * @param int l'id du client
- * @return int 0 if everyting is ok, -1 else
- */
-int sendAnswerToClient();
-
-/**
- * @brief to define the start line (the function will reallocate the memory needed)
- * 
- * @param httpVersion (3 character like 1.2)
- * @param statusCode 
- * @param reasonPhrase 
- * @return int 0 if good -1 else 
- */
-int constructFirstLine(char *httpVersion, int statusCode, char *reasonPhrase);
-
-/**
- * @brief to define the messqge body (you can choose if you want to allocate memory)
- * 
- * @param message 
- * @param len 
- * @param needToAllocate 
- * @return int 
- */
-int constructMessageBody(char *message, int len, int needToAllocate);
-
-/**
- * @brief to define one header
- * 
- * @param header 
- * @param len 
- * @return int 
- */
-int constructHeader(char *header, int len);
+int constructHostHeader();  
 
 #endif
