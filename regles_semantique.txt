@@ -1,3 +1,16 @@
+!!! Ce fichier contient de nombreux copier coller des RFC des endroits imortants à prendre en compte                                       !!!
+!!!                                                                                                                                        !!!
+!!! Ce fichier n'est pas utile d'être lu, mieux vaut regarder les différents README.md qui expliquent très bien toutes les implémentations !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
 On accepte que des request line ! (unknown or invalid request method)
 
 ===== method =====
@@ -153,9 +166,73 @@ On accepte que des request line ! (unknown or invalid request method)
        forward the received Host field-value.
     - A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that           contains more than one Host header field or a Host header field with an invalid field-value.
     
-    ==== Connection header ====
+==== Connection header ====
     - In order to avoid confusing downstream recipients, a proxy or gateway MUST remove or replace any received connection options before forwarding the message.
-    - 
+    - When a header field aside from Connection is used to supply control information for or about the current connection, the sender MUST list the corresponding         field-name within the Connection header field.
+    - A proxy or gateway MUST parse a received Connection header field before a message is forwarded and, for each connection-option in this field, remove any             header field(s) from the message with the same name as the connection-option, and then remove the Connection header field itself (or replace it with the             intermediary's own connection options for the forwarded message).
+    - A client that does not support persistent connections MUST send the "close" connection option in every request message. A server that does not support               persistent connections MUST send the "close" connection option in every response message that does not have a 1xx (Informational) status code.
+    - HTTP implementations SHOULD support persistent connections.
+    - A recipient determines whether a connection is persistent or not based on the most recently received message's protocol version and Connection header field         (if any):
+      o  If the "close" connection option is present, the connection will
+      not persist after the current response; else,
+
+      o  If the received protocol is HTTP/1.1 (or later), the connection
+      will persist after the current response; else,
+
+      o  If the received protocol is HTTP/1.0, the "keep-alive" connection
+      option is present, the recipient is not a proxy, and the recipient
+      wishes to honor the HTTP/1.0 "keep-alive" mechanism, the
+      connection will persist after the current response; otherwise,
+
+      o  The connection will close after the current response.
+      
+    - A server MUST read the entire request message body or close the connection after sending its response, since otherwise the remaining data on a persistent           connection would be misinterpreted as the next request.
+    - A proxy server MUST NOT maintain a persistent connection with an HTTP/1.0 client (see Section 19.7.1 of [RFC2068] for information and discussion of the             problems with the Keep-Alive header field implemented by many HTTP/1.0 clients).
+    - A server MAY process a sequence of pipelined requests in parallel if they all have safe methods (Section 4.2.1 of [RFC7231]), but it MUST send the                   corresponding responses in the same order that the requests were received.
+    - A client, server, or proxy MAY close the transport connection at any time.
+    - A server SHOULD sustain persistent connections, when possible, and allow the underlying transport's flow-control mechanisms to resolve temporary overloads,         rather than terminate connections with the expectation that clients will retry.
+    - A server that receives a "close" connection option MUST initiate a
+    close of the connection (see below) after it sends the final response
+    to the request that contained "close".  The server SHOULD send a
+    "close" connection option in its final response on that connection.
+    The server MUST NOT process any further requests received on that
+    connection.
+    - A server that sends a "close" connection option MUST initiate a close
+   of the connection (see below) after it sends the response containing
+   "close".  The server MUST NOT process any further requests received
+   on that connection.
+    - A server MAY ignore a received Upgrade header field if it wishes to continue using the current protocol on that connection.
+    - A server that sends a 101 (Switching Protocols) response MUST send an
+   Upgrade header field to indicate the new protocol(s) to which the
+   connection is being switched; if multiple protocol layers are being
+   switched, the sender MUST list the protocols in layer-asce
+   - A server MUST NOT switch to a protocol that was not indicated
+   by the client in the corresponding request's Upgrade header field.  A server MAY choose to ignore the order of preference indicated by the
+   client and select the new protocol(s) based on other factors, such as
+   the nature of the request or the current load on the server.
+   - A server that sends a 426 (Upgrade Required) response MUST send an
+   Upgrade header field to indicate the acceptable protocols, in order
+   of descending preference.
+   -  A server MAY send an Upgrade header field in any other response to
+   advertise that it implements support for upgrading to the listed
+   protocols, in order of descending preference, when appropriate for a
+   future request.
+   - A server MUST NOT switch protocols
+   unless the received message semantics can be honored by the new
+   protocol; an OPTIONS request can be honored by any protocol.
+   - A server MUST ignore an Upgrade header field that is received in an
+   HTTP/1.0 request.
+   - If a server receives both an Upgrade and an Expect header field with
+   the "100-continue" expectation (Section 5.1.1 of [RFC7231]), the
+   server MUST send a 100 (Continue) response before sending a 101
+   (Switching Protocols) response.
+   - The Upgrade header field only applies to switching protocols on top
+   of the existing connection; it cannot be used to switch the
+   underlying connection (transport) protocol, nor to switch the
+   existing communication to a different connection.  For those
+   purposes, it is more appropriate to use a 3xx (Redirection) response
+   (Section 6.4 of [RFC7231]).
+   
 
    
     
@@ -175,3 +252,15 @@ si plus grand que 1.1 alors un champ HOST est obligatoire (400 Bad Request)
 libmagick
 
 conent-length et content-type
+
+
+
+
+
+
+
+
+
+
+
+

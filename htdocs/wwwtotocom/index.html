@@ -20,27 +20,15 @@
 
 <a href="page.html">Aller sur page.html</a>
 
+<a href="http://www.fakesite.fr:8080/index.html">Aller sur mon fake site</a>
+
 <div style="background-color: orange; display: block; width: 50px; height: 50px; border: 2px black solid; border-radius: 5px;" onclick="changerCouleur()" class="test">
     <p style="text-align: center; font-size: small;">orange</p>
 </div>
 
-<script type="text/javascript">
-    function changerCouleur()
-    {
-            //On récupère tout les input.
-        var input1 = document.getElementsByClassName("test");
-     
-            //Comme le résultat est un array on est obliger de le parcourrir pour
-            //Changer chaque input
-        for (var i = 0; i < input1.length; i++) {
-            if(input1[i].style.backgroundColor == "red")
-                input1[i].style.backgroundColor = "orange";
-            else
-            input1[i].style.backgroundColor = "red"
-        }
-    }
-     
-</script>
+<img src="image.jpg">
+
+<script type="text/javascript" src="basic.js"></script>
 
 </body>
 </html>
