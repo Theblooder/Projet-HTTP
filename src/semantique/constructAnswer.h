@@ -84,4 +84,6 @@ int constructContentLengthHeader();
  */
 int constructHostHeader();  
 
+int read_char(char c);
+
 #endif
