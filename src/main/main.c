@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	message *requete;
 	int res;
 	node *root;
-	//while ( 1 ) {
+	while ( 1 ) {
 		// on attend la reception d'une requete HTTP requete pointera vers une ressource allouée par librequest.
 		if ((requete=getRequest(8080)) == NULL ) return -1;
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 		// on ne se sert plus de requete a partir de maintenant, on peut donc liberer...
 		freeRequest(requete);
 		purgeTree(root);
-	//}
+	}
 
 	return 1;
 }

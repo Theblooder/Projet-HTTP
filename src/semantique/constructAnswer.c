@@ -175,6 +175,25 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
     cleanRequest = malloc((len + 1) * sizeof(char)); /* the +1 is for the '\0' at the end */
 
 
+    _Token *t1,*t2,*t3;
+    node *percent_encoding;
+
+    t1 = searchTree(treeRoot, "request_line");
+    t2 = searchTree(t1->node, "absolute_path"); purgeElement(&t1);
+    t3 = searchTree(t2->node, "percent_encoding"); purgeElement(&t2);
+    
+    while(t3 != NULL) {
+        percent_encoding = t3->node;
+
+        char debut = requete->buf[percent_encoding->pStart];
+        
+
+        t3 = t3->next;
+    }
+
+
+    purgeElement(&t3);
+
     /* !!!! ATTENTION ces deux lignes sont la juste pour que le code marche si le pourcent encoding n'est pas fais, à enlever bien sûr si le code est fait */
     strncpy(cleanRequest, dirtyRequest, len);
     cleanRequest[len] = '\0';
@@ -184,7 +203,11 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
 
     /*a/b%D3/c/../d --> a/b@/d */
 
+    if(!strcmp(cleanRequest, "/")) {
+        strcat(cleanRequest, "index.html");
+    }
 
+    printf("\nCleanRequest:\n\n%s\n\n\n", cleanRequest);
     return cleanRequest;
 }
 
