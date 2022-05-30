@@ -170,33 +170,90 @@ int needToCloseConnection()
     }
 }
 
-char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
-{
+char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest){
     cleanRequest = malloc((len + 1) * sizeof(char)); /* the +1 is for the '\0' at the end */
-
-
-    _Token *t1,*t2,*t3;
-    node *percent_encoding;
-
-    t1 = searchTree(treeRoot, "request_line");
-    t2 = searchTree(t1->node, "absolute_path"); purgeElement(&t1);
-    t3 = searchTree(t2->node, "percent_encoding"); purgeElement(&t2);
-    
-    while(t3 != NULL) {
-        percent_encoding = t3->node;
-
-        char debut = requete->buf[percent_encoding->pStart];
-        
-
-        t3 = t3->next;
+    char *tempRequest = malloc((len + 1) * sizeof(char));
+    char c;
+    char c1;
+    char c2;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    while(i<len){
+        if(dirtyRequest[i]=='%'){
+            c1=dirtyRequest[i+1];
+            c2=dirtyRequest[i+2];
+            c=read_char(c1)*16 + read_char(c2);
+            tempRequest[j]=c;
+            i=i+3;
+            j++;
+        }
+        else{
+            tempRequest[j]=dirtyRequest[i];
+            i++;
+            j++;
+        }
+    }
+    tempRequest[j]='\0';
+    i = 0;
+    while(i<j){
+        if(tempRequest[i]=='.'){
+            if(tempRequest[i+1]=='.'){
+                if(tempRequest[i+2]=='/'){
+                    i=i+3;
+                }
+                else if (tempRequest[i+2]=='\0'){
+                    i=i+2;
+                }
+            }
+            else if (tempRequest[i+1]=='/'){
+                i=i+2;
+            }
+            else if (tempRequest[i+1]=='\0'){
+                i++;
+            }
+        }
+        if(tempRequest[i]=='/'){
+            if (tempRequest[i+1]=='.'){
+                if(tempRequest[i+2]=='/'){
+                    i=i+2;
+                }
+                else if (tempRequest[i+2]=='.'){
+                    while((k!=0) && (cleanRequest[k]!='/')){
+                        k--;
+                    }
+                    i = i+3;
+                }
+                else{
+                    tempRequest[i+1]=='/';
+                    i++;
+                }
+            }
+            else{
+                cleanRequest[k]=tempRequest[i];
+                i++;
+                k++;
+                while((tempRequest[i]!='/')&&(tempRequest[i]!='\0')){
+                  cleanRequest[k]=tempRequest[i];
+                  k++;
+                  i++;
+                }
+            }
+        }
     }
 
+    /* !!!! ATTENTION ces deux lignes sont la juste pour que le code marche si le pourcent encoding n'est pas fais, Ã  enlever bien sÃ»r si le code est fait */
+    if((k>1)&&(cleanRequest[k-1]=='/')){
+      k--;
+    }
+    if(k==0){
+      cleanRequest[k]='/';
+      k++;
+    }
+    if(k!=0){
+      cleanRequest[k] = '\0';
+    }
 
-    purgeElement(&t3);
-
-    /* !!!! ATTENTION ces deux lignes sont la juste pour que le code marche si le pourcent encoding n'est pas fais, à enlever bien sûr si le code est fait */
-    strncpy(cleanRequest, dirtyRequest, len);
-    cleanRequest[len] = '\0';
 
 
     /* pourcent_encoding */
@@ -209,6 +266,17 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
 
     printf("\nCleanRequest:\n\n%s\n\n\n", cleanRequest);
     return cleanRequest;
+}
+
+int read_char(char c){
+    int i;
+    if(c>=48 && c<=57){
+        i=c-48;
+    }
+    else if ( c>= 65 && c <= 70){
+        i=c-55;
+    }
+    return i;
 }
 
 int constructAbsolutePath()
