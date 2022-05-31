@@ -18,6 +18,8 @@ typedef struct file {
 #define HEAD 101
 #define POST 102
 
+#define PHP 1000
+
 #define MAX_REASON_PHRASE 32
 
 /**

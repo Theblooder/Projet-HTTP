@@ -14,6 +14,8 @@
 #include "constructAnswer.h"
 #include "Answer.h"
 #include "serverConf.h"
+#include "fastcgi.h"
+#include "socket_1.h"
 
 #include "magic.h"
 
@@ -115,20 +117,46 @@ int constructAnswer(node *root, message *req, char *reason, int *versionHTTP)
             return 500;
         }
 
-        /* To get all the inforamation of the file (! It can open it because its after the the libMagic use) need to be do after the function constructAbsolutePath */
-        int file;
-        file = open(f->filePath, O_RDONLY);
-        fstat(file, &f->st);
-        f->addr = mmap(NULL, f->st.st_size, PROT_WRITE, MAP_PRIVATE, file, 0);
-        close(file);
+        if(res1 == PHP) {
+            char contentType[128];
+            char *messageBody;
+            int contentLength = 0;
+            char *forFreeMessageBody;
+            int res2 = getResultFromPHPInterpreter(&messageBody, contentType, &contentLength, f->filePath, "GET", &forFreeMessageBody);
 
-        constructContentLengthHeader();
+            //constructHeader(contentType, strlen(contentType));
 
+            char headerLength[32];
+            sprintf(headerLength, "Content-Length: %d\r\n", contentLength);
+            constructHeader(headerLength, strlen(headerLength));
+            constructHeader("Content-type: text/html\r\n", 25);
 
-        /*If GET we need to put the body*/
-        if(method == GET) {
-            constructMessageBody(f->addr, f->st.st_size, 0);
+            if(method == GET) {
+                constructMessageBody(messageBody, contentLength, 1);
+            }
+            free(forFreeMessageBody);
+
         }
+        else {
+            /* To get all the information of the file (! It can open it because its after the the libMagic use) need to be do after the function constructAbsolutePath */
+            int file;
+            file = open(f->filePath, O_RDONLY);
+            fstat(file, &f->st);
+            f->addr = mmap(NULL, f->st.st_size, PROT_WRITE, MAP_PRIVATE, file, 0);
+            close(file);
+
+            constructContentLengthHeader();
+
+
+            /*If GET we need to put the body*/
+            if(method == GET) {
+                constructMessageBody(f->addr, f->st.st_size, 0);
+            }
+        }
+    }
+    if(method == POST) {
+        constructAbsolutePath();
+
     }
 
 
@@ -171,7 +199,7 @@ int needToCloseConnection()
 }
 
 char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest){
-    cleanRequest = malloc((len + 1) * sizeof(char)); /* the +1 is for the '\0' at the end */
+    cleanRequest = malloc((len + 1 + 20) * sizeof(char)); /* the +1 is for the '\0' at the end */  /* + 20 pour le path par défault*/
     char *tempRequest = malloc((len + 1) * sizeof(char));
     char c;
     char c1;
@@ -230,11 +258,11 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
                 }
             }
             else{
-                cleanRequest[k]=tempRequest[i];
+                cleanRequest[k] = tempRequest[i];
                 i++;
                 k++;
                 while((tempRequest[i]!='/')&&(tempRequest[i]!='\0')){
-                  cleanRequest[k]=tempRequest[i];
+                  cleanRequest[k] = tempRequest[i];
                   k++;
                   i++;
                 }
@@ -243,17 +271,15 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
     }
 
     /* !!!! ATTENTION ces deux lignes sont la juste pour que le code marche si le pourcent encoding n'est pas fais, Ã  enlever bien sÃ»r si le code est fait */
-    if((k>1)&&(cleanRequest[k-1]=='/')){
+    if((k>1)&&(cleanRequest[k-1]=='/')) {
       k--;
     }
-    if(k==0){
+    if(k==0) {
       cleanRequest[k]='/';
       k++;
     }
-    if(k!=0){
-      cleanRequest[k] = '\0';
-    }
 
+    cleanRequest[k] = '\0';
 
 
     /* pourcent_encoding */
@@ -261,8 +287,9 @@ char *cleanResquestTarget(const char *dirtyRequest, int len, char *cleanRequest)
     /*a/b%D3/c/../d --> a/b@/d */
 
     if(!strcmp(cleanRequest, "/")) {
-        strcat(cleanRequest, "index.html");
+        strcpy(cleanRequest, "/index.html");
     }
+    free(tempRequest);
 
     printf("\nCleanRequest:\n\n%s\n\n\n", cleanRequest);
     return cleanRequest;
@@ -273,7 +300,7 @@ int read_char(char c){
     if(c>=48 && c<=57){
         i=c-48;
     }
-    else if ( c>= 65 && c <= 70){
+    else if (c>= 65 && c <= 70){
         i=c-55;
     }
     return i;
@@ -361,6 +388,13 @@ int constructContentTypeHeader()
 
     mime = magic_descriptor(magic_cookie, file);
 
+    /* If php we return PHP (int) and we dont construct the header */
+
+    if(strstr(f->filePath, ".php")) {
+        magic_close(magic_cookie);
+        return PHP;
+    }
+
     /* If he have text/plain we look at the extension to see if we have .css or .js */
 
     if(strcmp(mime, "text/plain") == 0) {
@@ -394,7 +428,7 @@ int constructContentLengthHeader()
 {
     char header[32];
 
-    sprintf(header, "Content-Length: %d\r\n\0", f->st.st_size);
+    sprintf(header, "Content-Length: %d\r\n", f->st.st_size);
 
     constructHeader(header, strlen(header));
 
@@ -415,7 +449,7 @@ int constructHostHeader()
 
     char header[MAX_LENGTH_SITE + 10];
 
-    sprintf(header, "Host: %.*s\r\n\0", host->length, &requete->buf[host->pStart]);
+    sprintf(header, "Host: %.*s\r\n", host->length, &requete->buf[host->pStart]);
 
     constructHeader(header, strlen(header));
 
