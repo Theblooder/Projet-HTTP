@@ -14,9 +14,10 @@ Codes d'erreurs utilisé :
 
 - 400 (Si version >= 1.1 et pas de header `Host` présent)
 - 404 (Si le fichier recherché n'existe pas)
+- 405 (Si méthode POST mais pas de fichier .php)
 
 - 500 (Si nous avons une erreur serveur dans la lecture du type MIME)
-- 501 (Si le méthode n'est pas implémenté (pour l'instant nous avons seulement GET et HEAD))
+- 501 (Si le méthode n'est pas implémenté (pour l'instant nous avons seulement GET, HEAD et POST))
 - 505 (Si le version d'HTTP n'est pas supporté maximum 1.9)
 
 Headers utilisés :

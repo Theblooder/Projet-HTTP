@@ -19,7 +19,7 @@ static int createSocket(int port);
 
 void readSocket(int fd);
 
-int getResultFromPHPInterpreter(char **result, char *contentType, int *contentLength, char *path, char *method, char **forFreeMessageBody);
+int getResultFromPHPInterpreter(char **result, char *contentType, int *contentLength, char *path, char *method, char **forFreeMessageBody, char *responsePhrase, char *referer, int lenReferer, char *query, int queryLength, char *contLength, int contLengthLength, char *contType, int contTypeLength, char *messagebody, int messageBodyLength);
 
 
 #endif

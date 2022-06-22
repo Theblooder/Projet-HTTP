@@ -20,7 +20,7 @@ typedef struct file {
 
 #define PHP 1000
 
-#define MAX_REASON_PHRASE 32
+#define MAX_REASON_PHRASE 64
 
 /**
  * @brief To verify some semantic rules

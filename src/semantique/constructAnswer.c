@@ -122,19 +122,40 @@ int constructAnswer(node *root, message *req, char *reason, int *versionHTTP)
             char *messageBody;
             int contentLength = 0;
             char *forFreeMessageBody;
-            int res2 = getResultFromPHPInterpreter(&messageBody, contentType, &contentLength, f->filePath, "GET", &forFreeMessageBody);
+            char responsePhrase[MAX_REASON_PHRASE];
+            _Token *t1;
+            node *referer;
 
-            //constructHeader(contentType, strlen(contentType));
-
-            char headerLength[32];
-            sprintf(headerLength, "Content-Length: %d\r\n", contentLength);
-            constructHeader(headerLength, strlen(headerLength));
-            constructHeader("Content-type: text/html\r\n", 25);
-
-            if(method == GET) {
-                constructMessageBody(messageBody, contentLength, 1);
+            _Token *t2;
+            node *query;
+            char *queryC = NULL;
+            int queryL = 0;
+            t2 = searchTree(treeRoot, "query");
+            if(t2 != NULL) {
+                query = t2->node; purgeElement(&t2);
+                queryC = &requete->buf[query->pStart];
+                queryL = query->length;
             }
-            free(forFreeMessageBody);
+
+            int res2 = getResultFromPHPInterpreter(&messageBody, contentType, &contentLength, f->filePath, "GET", &forFreeMessageBody, responsePhrase, NULL, 0, queryC, queryL, NULL, 0, NULL, 0, NULL, 0);
+
+            if(res2 == 200) {
+                char headerLength[32];
+                sprintf(headerLength, "Content-Length: %d\r\n", contentLength);
+                constructHeader(headerLength, strlen(headerLength));
+                constructHeader(contentType, strlen(contentType));
+
+                if(method == GET) {
+                    constructMessageBody(messageBody, contentLength, 1);
+                }
+                free(forFreeMessageBody);
+            }
+            else {
+                strncpy(reason, responsePhrase, strlen(responsePhrase));
+                free(f->filePath);
+                free(f);
+                return res2;
+            }
 
         }
         else {
@@ -157,6 +178,73 @@ int constructAnswer(node *root, message *req, char *reason, int *versionHTTP)
     if(method == POST) {
         constructAbsolutePath();
 
+        int res1 = constructContentTypeHeader();
+        if(res1 == -1) {
+            strcpy(reason, "Not Found");
+            free(f->filePath);
+            free(f);
+            return 404;
+        }
+        else if(res1 == -2) {
+            strcpy(reason, "Error LibMagic");
+            free(f->filePath);
+            free(f);
+            return 500;
+        }
+
+        if(res1 == PHP) {
+            char contentType[128];
+            char *messageBody;
+            int contentLength = 0;
+            char *forFreeMessageBody;
+            char responsePhrase[MAX_REASON_PHRASE];
+
+            _Token *t1;
+            node *referer;
+            t1 = searchTree(treeRoot, "Referer");
+            referer = t1->node; purgeElement(&t1);
+
+            _Token *t2;
+            node *contLength;
+            t2 = searchTree(treeRoot, "Content_Length");
+            contLength = t2->node; purgeElement(&t2);
+
+            _Token *t3;
+            node *contType;
+            t3 = searchTree(treeRoot, "Content_Type");
+            contType = t3->node; purgeElement(&t3);
+
+            _Token *t4;
+            node *messBody;
+            t4 = searchTree(treeRoot, "message_body");
+            messBody = t4->node; purgeElement(&t4);
+
+
+            int res2 = getResultFromPHPInterpreter(&messageBody, contentType, &contentLength, f->filePath, "POST", &forFreeMessageBody, responsePhrase, &requete->buf[referer->pStart], referer->length, NULL, 0, &requete->buf[contLength->pStart], contLength->length, &requete->buf[contType->pStart], contType->length, &requete->buf[messBody->pStart], messBody->length);
+
+            if(res2 == 200) {
+                char headerLength[32];
+                sprintf(headerLength, "Content-Length: %d\r\n", contentLength);
+                constructHeader(headerLength, strlen(headerLength));
+                constructHeader(contentType, strlen(contentType));
+
+                constructMessageBody(messageBody, contentLength, 1);
+                free(forFreeMessageBody);
+            }
+            else {
+                strncpy(reason, responsePhrase, strlen(responsePhrase));
+                free(f->filePath);
+                free(f);
+                return res2;
+            }
+
+        }
+        else {
+            strcpy(reason, "Method Not Allowed");
+            free(f->filePath);
+            free(f);
+            return 405;
+        }
     }
 
 

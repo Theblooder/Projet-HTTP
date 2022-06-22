@@ -1,5 +1,21 @@
 # README.md
 
+## Version 3.0
+
+Le server accepte maintenant les requête POST et arrive maintenant à utilisé les la librairie FASTCGI pour pouvoir traiter des pages PHP.
+
+Les méthodes acceptées sont :
+- GET
+- HEAD
+- POST
+
+Le programme s’exécute de la manière suivante
+
+- `make`
+- `./httpparseur`
+
+Le programme écoute sur l'adresse 127.0.0.1 et sur le port 8080 et pour le php sur le port 9000
+
 ## Version 2.0
 
 Nous pouvons maintenant générer une réponse pour un requete reçu, toutes les informations détaillées sont dans le fichier README.md dans le dossier /src/semantique.
